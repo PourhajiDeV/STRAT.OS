@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRAT.OS</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        :root {
+            --font-main: 'Vazirmatn', sans-serif;
+            --bg-base: #020308;
+            --glass-bg: rgba(10, 14, 27, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-highlight: rgba(255, 255, 255, 0.02);
+            --text-primary: #f8fafc;
+            --text-muted: #64748b;
+            --glow-indigo: linear-gradient(135deg, #818cf8, #4f46e5);
+            --glow-cyan: linear-gradient(135deg, #22d3ee, #0891b2);
+            --glow-emerald: linear-gradient(135deg, #34d399, #059669);
+            --glow-rose: linear-gradient(135deg, #fb7185, #e11d48);
+            --glow-amber: linear-gradient(135deg, #fbbf24, #d97706);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .glass-bg-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 50%, #060a1f, #020308);
+        }
+
+        .sphere {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.35;
+            animation: floatSpheres 20s infinite alternate ease-in-out;
+        }
+
+        .sphere-one { width: 600px; height: 600px; background: #4f46e5; top: -150px; right: 5%; }
+        .sphere-two { width: 500px; height: 500px; background: #06b6d4; bottom: -10px; left: 2%; animation-delay: -5s; }
+        .sphere-three { width: 420px; height: 420px; background: #e11d48; top: 30%; left: 30%; animation-delay: -10s; }
+
+        @keyframes floatSpheres {
+            0% { transform: translateY(0px) scale(1) rotate(0deg); filter: blur(150px); }
+            50% { filter: blur(170px); }
+            100% { transform: translateY(60px) scale(1.15) rotate(60deg); filter: blur(150px); }
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            backdrop-filter: saturate(150%) contrast(105%);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(4, 6, 14, 0.6);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-left: 1px solid var(--glass-border);
+            padding: 45px 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -15px 0 45px rgba(0, 0, 0, 0.6);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(90deg, #818cf8, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 60px;
+            text-align: center;
+            text-shadow: 0 0 30px rgba(129, 140, 248, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .nav-item {
+            padding: 16px 22px;
+            border-radius: 18px;
+            color: var(--text-muted);
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .nav-item:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.02);
+            border-color: rgba(255, 255, 255, 0.04);
+            transform: translateX(-4px);
+        }
+
+        .nav-item.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: inset 0 1px 1px var(--glass-highlight), 0 12px 24px rgba(0,0,0,0.25);
+            border-color: var(--glass-border);
+            transform: scale(1.03);
+        }
+
+        .main-workspace {
+            flex: 1;
+            padding: 45px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header-titles h1 {
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            background: linear-gradient(180deg, var(--text-primary) 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-titles p {
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .status-badge {
+            padding: 10px 22px;
+            border-radius: 16px;
+            background: rgba(52, 211, 153, 0.04);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            color: #34d399;
+            font-weight: 800;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 20px rgba(52, 211, 153, 0.05);
+        }
+
+        .app-view {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            animation: fadeInView 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .app-view.active-view {
+            display: flex;
+        }
+
+        @keyframes fadeInView {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .kpi-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3), inset 0 1px 0 var(--glass-highlight);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .kpi-label {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-val {
+            font-size: 44px;
+            font-weight: 950;
+            margin-top: 12px;
+            line-height: 1;
+        }
+
+        .kpi-card.total .kpi-val { color: #818cf8; text-shadow: 0 0 30px rgba(129, 140, 248, 0.2); }
+        .kpi-card.done .kpi-val { color: #34d399; text-shadow: 0 0 30px rgba(52, 211, 153, 0.2); }
+        .kpi-card.percentage .kpi-val { color: #fbbf24; text-shadow: 0 0 30px rgba(251, 191, 36, 0.2); }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.45fr 1fr;
+            gap: 40px;
+            flex: 1;
+        }
+
+        .panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 35px 70px rgba(0,0,0,0.4), inset 0 1px 0 var(--glass-highlight);
+        }
+
+        .panel-title {
+            font-size: 21px;
+            font-weight: 900;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-list {
+            list-style: none;
+            overflow-y: auto;
+            flex: 1;
+            max-height: 400px;
+            padding-left: 4px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--glass-border);
+            padding: 18px 24px;
+            border-radius: 22px;
+            margin-bottom: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .task-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: #818cf8;
+            transform: scale(1.01);
+        }
+
+        .task-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        
+        .check-container {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--text-muted);
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .task-item.completed .check-container {
+            background: var(--glow-emerald);
+            border: none;
+        }
+
+        .task-item.completed .check-container::after {
+            content: '';
+            position: absolute;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -60%) rotate(45deg);
+        }
+
+        .task-text {
+            font-size: 15px;
+            font-weight: 700;
+            color: #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .badge.high { background: rgba(244,63,94,0.1); color: #fb7185; border: 1px solid rgba(244,63,94,0.15); }
+        .badge.medium { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.15); }
+        .badge.low { background: rgba(52,211,153,0.1); color: #34d399; border: 1px solid rgba(52,211,153,0.15); }
+
+        .action-form {
+            display: flex;
+            gap: 14px;
+            margin-top: 25px;
+        }
+
+        .action-form input, .action-form select {
+            background: rgba(4, 6, 14, 0.6);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 16px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .action-form input:focus, .action-form select:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 20px rgba(129, 140, 248, 0.15);
+            background: rgba(4, 6, 14, 0.8);
+        }
+
+        .action-form input {
+            flex: 1;
+        }
+
+        button {
+            background: var(--glow-indigo);
+            color: white;
+            border: none;
+            padding: 16px 28px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        button:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-cyan {
+            background: var(--glow-cyan);
+            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-cyan:hover {
+            box-shadow: 0 14px 30px rgba(6, 182, 212, 0.4);
+        }
+
+        .habits-container {
+            max-height: 260px;
+            overflow-y: auto;
+            padding-left: 4px;
+        }
+
+        .habit-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--glass-border);
+            border-radius: 22px;
+            padding: 18px 24px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .habit-card:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .habit-details h4 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #f1f5f9;
+        }
+
+        .habit-details p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        .habit-ctrls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-inc {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-inc:hover {
+            background: var(--glow-indigo);
+            border-color: transparent;
+            transform: scale(1.05);
+        }
+
+        .btn-action-del {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 8px;
+            transition: color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-action-del:hover {
+            color: #fb7185;
+        }
+
+        textarea {
+            width: 100%;
+            height: 115px;
+            background: rgba(4, 6, 14, 0.6);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            border-radius: 22px;
+            padding: 18px;
+            font-size: 14px;
+            font-weight: 600;
+            resize: none;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        textarea:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 25px rgba(129, 140, 248, 0.15);
+            background: rgba(4, 6, 14, 0.8);
+        }
+
+        .delete-action {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .delete-action:hover {
+            color: #fb7185;
+        }
+
+        .analytics-showcase {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 35px;
+        }
+
+        .chart-mock {
+            height: 280px;
+            background: rgba(4, 6, 14, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            margin-top: 15px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 30px 40px;
+            position: relative;
+        }
+
+        .chart-bar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: flex-end;
+            width: 45px;
+        }
+
+        .chart-bar {
+            width: 100%;
+            background: var(--glow-indigo);
+            border-radius: 10px 10px 0 0;
+            transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 10px 20px rgba(129, 140, 248, 0.15);
+        }
+
+        .chart-label {
+            margin-top: 14px;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        
+        .config-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .config-row:last-child {
+            border-bottom: none;
+        }
+
+        .config-info h4 {
+            font-size: 16px;
+            font-weight: 800;
+            color: #f1f5f9;
+        }
+
+        .config-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        .config-select {
+            background: rgba(4, 6, 14, 0.7);
+            color: white;
+            border: 1px solid var(--glass-border);
+            padding: 10px 16px;
+            border-radius: 12px;
+            outline: none;
+            font-weight: 700;
+            font-size: 13px;
+            transition: border 0.3s;
+        }
+
+        .config-select:focus {
+            border-color: #818cf8;
+        }
+
+        @media (max-width: 1200px) {
+            .content-grid { grid-template-columns: 1fr; gap: 35px; }
+            .analytics-showcase { grid-template-columns: 1fr; gap: 35px; }
+            .app-container { flex-direction: column; }
+            .sidebar { width: 100%; border-left: none; border-bottom: 1px solid var(--glass-border); padding: 25px; }
+            .nav-menu { flex-direction: row; justify-content: center; gap: 15px; }
+            .logo { margin-bottom: 25px; }
+            body { overflow-y: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glass-bg-container">
+        <div class="sphere sphere-one"></div>
+        <div class="sphere sphere-two"></div>
+        <div class="sphere sphere-three"></div>
+    </div>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">⚡ STRAT.OS</div>
+            <nav class="nav-menu">
+                <div id="nav-dashboard" class="nav-item active" onclick="switchAppView('dashboard', this)">📊 داشبورد اصلی</div>
+                <div id="nav-analytics" class="nav-item" onclick="switchAppView('analytics', this)">📈 سیستم آنالیز</div>
+                <div id="nav-settings" class="nav-item" onclick="switchAppView('settings', this)">⚙️ تنظیمات هسته</div>
+            </nav>
+        </aside>
+
+        <main class="main-workspace">
+            <header class="top-header">
+                <div class="header-titles">
+                    <h1 id="view-title">برنامه‌ریزی استراتژیک روزانه</h1>
+                    <p id="live-date"></p>
+                </div>
+                <div class="status-badge" id="app-status">سیستم پایدار</div>
+            </header>
+
+            <section id="view-dashboard" class="app-view active-view">
+                <div class="kpi-grid">
+                    <div class="kpi-card total">
+                        <div class="kpi-label">کل اهداف فعال</div>
+                        <div class="kpi-val" id="kpi-total">0</div>
+                    </div>
+                    <div class="kpi-card done">
+                        <div class="kpi-label">ماموریت‌های نهایی</div>
+                        <div class="kpi-val" id="kpi-done">0</div>
+                    </div>
+                    <div class="kpi-card percentage">
+                        <div class="kpi-label">راندمان کل روز</div>
+                        <div class="kpi-val" id="kpi-pct">0%</div>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="panel">
+                        <div class="panel-title">🎯 ماموریت‌ها و تسک‌ها</div>
+                        <ul class="task-list" id="task-list"></ul>
+                        
+                        <div class="action-form">
+                            <input type="text" id="task-input" placeholder="شرح ماموریت جدید را وارد کنید...">
+                            <select id="task-priority">
+                                <option value="high">High 🔴</option>
+                                <option value="medium" selected>Medium 🟡</option>
+                                <option value="low">Low 🟢</option>
+                            </select>
+                            <button onclick="addNewTask()">ثبت هدف</button>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-title">🔥 مانیتور پویای عادات</div>
+                        <div id="habits-list" class="habits-container"></div>
+
+                        <div class="action-form">
+                            <input type="text" id="habit-name-input" placeholder="عنوان عادت جدید...">
+                            <input type="number" id="habit-target-input" placeholder="تارگت" min="1" value="5" style="width: 80px;">
+                            <input type="text" id="habit-unit-input" placeholder="واحد" style="width: 90px;">
+                            <button onclick="createNewHabit()" class="btn-cyan">+</button>
+                        </div>
+
+                        <div class="panel-title" style="margin-top: 35px; border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">📝 یادداشت‌های امروز</div>
+                        <textarea id="notes-area" placeholder="نکات کلیدی، لاگ‌های فنی یا جرقه‌های ذهنی امروز..." oninput="saveCurrentNotes()"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-analytics" class="app-view">
+                <div class="analytics-showcase">
+                    <div class="panel">
+                        <div class="panel-title">📈 فرکانس موفقیت هفته اخیر</div>
+                        <div class="chart-mock">
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" id="bar-sat" style="height: 0%;"></div>
+                                <div class="chart-label">شنبه</div>
+                            </div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" id="bar-sun" style="height: 0%;"></div>
+                                <div class="chart-label">۱شنبه</div>
+                            </div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" id="bar-mon" style="height: 0%;"></div>
+                                <div class="chart-label">۲شنبه</div>
+                            </div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" id="bar-tue" style="height: 0%;"></div>
+                                <div class="chart-label">۳شنبه</div>
+                            </div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" id="bar-wed" style="height: 0%;"></div>
+                                <div class="chart-label">۴شنبه</div>
+                            </div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" id="bar-thu" style="height: 0%;"></div>
+                                <div class="chart-label">۵شنبه</div>
+                            </div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" id="bar-fri" style="height: 0%;"></div>
+                                <div class="chart-label">جمعه</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-title">⚡ آمار کلی پلتفرم</div>
+                        <div class="config-row">
+                            <div class="config-info">
+                                <h4>پایداری عادات ساخته‌شده</h4>
+                                <p>نرخ ثبت منظم عادات پویا در سیستم</p>
+                            </div>
+                            <span id="stat-habit-rate" style="color: #34d399; font-weight: 800; font-size: 20px;">0%</span>
+                        </div>
+                        <div class="config-row">
+                            <div class="config-info">
+                                <h4>تسک‌های کامل شده کل</h4>
+                                <p>مجموع کل اهدافی که در این سیستم تیک خورده‌اند</p>
+                            </div>
+                            <span id="stat-total-completed" style="color: #818cf8; font-weight: 800; font-size: 20px;">0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-settings" class="app-view">
+                <div class="panel" style="max-width: 800px;">
+                    <div class="panel-title">🛠️ تنظیمات دیتابیس سیستمی</div>
+                    
+                    <div class="config-row">
+                        <div class="config-info">
+                            <h4>ذخیره‌سازی لوکال</h4>
+                            <p>پشتیبان‌گیری خودکار تمام تسک‌ها و عادات روی فریم‌ورک ایزوله مرورگر</p>
+                        </div>
+                        <div style="color: #34d399; font-weight: 800; font-size: 15px;">فعال</div>
+                    </div>
+
+                    <div class="config-row">
+                        <div class="config-info">
+                            <h4>فرمت نمایش تقویم</h4>
+                            <p>تغییر چیدمان ماژول تاریخ بالای داشبورد</p>
+                        </div>
+                        <select id="config-calendar-type" class="config-select" onchange="changeCalendarFormat()">
+                            <option value="fa">هجری شمسی</option>
+                            <option value="en">Gregorian / EN</option>
+                        </select>
+                    </div>
+
+                    <div class="config-row">
+                        <div class="config-info">
+                            <h4>پاکسازی متمرکز هسته دیتابیس</h4>
+                            <p style="color: #fb7185; font-weight: 600;">تمام وظایف، عادات ساخته شده و یادداشت‌ها فوراً فرمت می‌شوند.</p>
+                        </div>
+                        <button onclick="factoryResetDatabase()" style="background: var(--glow-rose); box-shadow: 0 10px 25px rgba(225, 29, 72, 0.25);">فرمت دیتا</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const storageKey = "STRATOS_DATA_GLOBAL_V4";
+        const historicalKey = "STRATOS_HISTORICAL_V4";
+
+        let appState = JSON.parse(localStorage.getItem(storageKey)) || {
+            tasks: [],
+            habits: {}, 
+            notes: ""
+        };
+
+        let historicalData = JSON.parse(localStorage.getItem(historicalKey)) || {
+            "شنبه": 0, "۱شنبه": 0, "۲شنبه": 0, "۳شنبه": 0, "۴شنبه": 0, "۵شنبه": 0, "جمعه": 0
+        };
+
+        let currentCalendarLang = localStorage.getItem("STRATOS_CAL_LANG") || "fa";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateLiveDate();
+            document.getElementById('notes-area').value = appState.notes;
+            document.getElementById('config-calendar-type').value = currentCalendarLang;
+            refreshUI();
+            preloadAnimations();
+        });
+
+        function updateLiveDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const locale = currentCalendarLang === "fa" ? 'fa-IR' : 'en-US';
+            document.getElementById('live-date').innerText = new Date().toLocaleDateString(locale, options);
+        }
+
+        function changeCalendarFormat() {
+            currentCalendarLang = document.getElementById('config-calendar-type').value;
+            localStorage.setItem("STRATOS_CAL_LANG", currentCalendarLang);
+            updateLiveDate();
+        }
+
+        function switchAppView(viewId, element) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+
+            document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active-view'));
+            document.getElementById(`view-${viewId}`).classList.add('active-view');
+
+            const titleMap = {
+                'dashboard': 'برنامه‌ریزی استراتژیک روزانه',
+                'analytics': 'سیستم آنالیز و نمودار فرکانس',
+                'settings': 'تنظیمات هسته و کنترل دیتابیس'
+            };
+            document.getElementById('view-title').innerText = titleMap[viewId];
+            
+            if(viewId === 'analytics') {
+                renderHistoricalChart();
+            }
+        }
+
+        function refreshUI() {
+            localStorage.setItem(storageKey, JSON.stringify(appState));
+            
+            const listContainer = document.getElementById('task-list');
+            listContainer.innerHTML = '';
+            let completedCount = 0;
+
+            appState.tasks.forEach(task => {
+                if(task.done) completedCount++;
+                const li = document.createElement('li');
+                li.className = `task-item ${task.done ? 'completed' : ''}`;
+                
+                let priorityText = task.priority === 'high' ? 'High 🔴' : (task.priority === 'medium' ? 'Medium 🟡' : 'Low 🟢');
+                
+                li.innerHTML = `
+                    <div class="task-left">
+                        <div class="check-container" onclick="toggleTask(${task.id})"></div>
+                        <span class="task-text">${task.text}</span>
+                        <span class="badge ${task.priority}">${priorityText}</span>
+                    </div>
+                    <button class="delete-action" onclick="deleteTask(${task.id})">🗑️</button>
+                `;
+                listContainer.appendChild(li);
+            });
+
+            const habitContainer = document.getElementById('habits-list');
+            habitContainer.innerHTML = '';
+            
+            for(let id in appState.habits) {
+                const h = appState.habits[id];
+                const div = document.createElement('div');
+                div.className = 'habit-card';
+                div.innerHTML = `
+                    <div class="habit-details">
+                        <h4>${h.name}</h4>
+                        <p>${h.current} از ${h.target} ${h.unit}</p>
+                    </div>
+                    <div class="habit-ctrls">
+                        <button class="btn-action-del" onclick="deleteHabit('${id}')">🗑️</button>
+                        <button class="btn-inc" onclick="adjustHabit('${id}', -1)">-</button>
+                        <button class="btn-inc" onclick="adjustHabit('${id}', 1)">+</button>
+                    </div>
+                `;
+                habitContainer.appendChild(div);
+            }
+
+            const total = appState.tasks.length;
+            document.getElementById('kpi-total').innerText = total;
+            document.getElementById('kpi-done').innerText = completedCount;
+            
+            const pct = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+            document.getElementById('kpi-pct').innerText = pct + '%';
+            
+            updateCurrentDayHistory(pct);
+            updateGlobalStats();
+        }
+
+        function toggleTask(id) {
+            const target = appState.tasks.find(t => t.id === id);
+            if(target) {
+                target.done = !target.done;
+                if(target.done) {
+                    incrementLifetimeCompleted();
+                } else {
+                    decrementLifetimeCompleted();
+                }
+            }
+            refreshUI();
+        }
+
+        function addNewTask() {
+            const text = document.getElementById('task-input').value.trim();
+            const priority = document.getElementById('task-priority').value;
+            if(!text) return;
+            appState.tasks.push({ id: Date.now(), text: text, priority: priority, done: false });
+            document.getElementById('task-input').value = '';
+            refreshUI();
+        }
+
+        function deleteTask(id) {
+            const target = appState.tasks.find(t => t.id === id);
+            if(target && target.done) {
+                decrementLifetimeCompleted();
+            }
+            appState.tasks = appState.tasks.filter(t => t.id !== id);
+            refreshUI();
+        }
+
+        function createNewHabit() {
+            const name = document.getElementById('habit-name-input').value.trim();
+            const target = parseInt(document.getElementById('habit-target-input').value) || 1;
+            const unit = document.getElementById('habit-unit-input').value.trim() || "بار";
+            
+            if(!name) return;
+            
+            const habitId = "habit_" + Date.now();
+            appState.habits[habitId] = { name: name, current: 0, target: target, unit: unit };
+            
+            document.getElementById('habit-name-input').value = '';
+            document.getElementById('habit-target-input').value = 5;
+            document.getElementById('habit-unit-input').value = '';
+            refreshUI();
+        }
+
+        function adjustHabit(id, val) {
+            if(appState.habits[id]) {
+                appState.habits[id].current = Math.max(0, appState.habits[id].current + val);
+                refreshUI();
+            }
+        }
+
+        function deleteHabit(id) {
+            delete appState.habits[id];
+            refreshUI();
+        }
+
+        function saveCurrentNotes() {
+            appState.notes = document.getElementById('notes-area').value;
+            localStorage.setItem(storageKey, JSON.stringify(appState));
+        }
+
+        function updateCurrentDayHistory(pct) {
+            const daysMap = {"Saturday": "شنبه", "Sunday": "۱شنبه", "Monday": "۲شنبه", "Tuesday": "۳شنبه", "Wednesday": "۴شنبه", "Thursday": "۵شنبه", "Friday": "جمعه"};
+            const enDay = new Date().toLocaleString('en-US', { weekday: 'long' });
+            const faDay = daysMap[enDay] || "شنبه";
+            
+            historicalData[faDay] = pct;
+            localStorage.setItem(historicalKey, JSON.stringify(historicalData));
+        }
+
+        function renderHistoricalChart() {
+            const days = ["شنبه", "۱شنبه", "۲شنبه", "۳شنبه", "۴شنبه", "۵شنبه", "جمعه"];
+            const ids = ["bar-sat", "bar-sun", "bar-mon", "bar-tue", "bar-wed", "bar-thu", "bar-fri"];
+            
+            days.forEach((day, index) => {
+                const val = historicalData[day] || 0;
+                const el = document.getElementById(ids[index]);
+                if(el) {
+                    el.style.height = val + '%';
+                    if(val > 75) {
+                        el.style.background = 'var(--glow-emerald)';
+                    } else if(val > 40) {
+                        el.style.background = 'var(--glow-indigo)';
+                    } else if(val > 0) {
+                        el.style.background = 'var(--glow-rose)';
+                    } else {
+                        el.style.background = 'rgba(255,255,255,0.05)';
+                        el.style.height = '5%';
+                    }
+                }
+            });
+        }
+
+        function incrementLifetimeCompleted() {
+            let count = parseInt(localStorage.getItem("STRATOS_LIFETIME_DONE")) || 0;
+            localStorage.setItem("STRATOS_LIFETIME_DONE", count + 1);
+        }
+
+        var preloadAnimations = function() {
+            let elements = document.querySelectorAll('.kpi-card');
+            elements.forEach((el, index) => {
+                el.style.opacity = 0;
+                el.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    el.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                    el.style.opacity = 1;
+                    el.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        };
+
+        function decrementLifetimeCompleted() {
+            let count = parseInt(localStorage.getItem("STRATOS_LIFETIME_DONE")) || 0;
+            localStorage.setItem("STRATOS_LIFETIME_DONE", Math.max(0, count - 1));
+        }
+
+        function updateGlobalStats() {
+            let lifetimeDone = localStorage.getItem("STRATOS_LIFETIME_DONE") || 0;
+            let elTotal = document.getElementById("stat-total-completed");
+            if(elTotal) elTotal.innerText = lifetimeDone;
+
+            let habits = Object.values(appState.habits);
+            let stableCount = 0;
+            habits.forEach(h => {
+                if(h.current >= h.target) stableCount++;
+            });
+            let rate = habits.length > 0 ? Math.round((stableCount / habits.length) * 100) : 0;
+            let elRate = document.getElementById("stat-habit-rate");
+            if(elRate) elRate.innerText = rate + '%';
+        }
+
+        function factoryResetDatabase() {
+            if(confirm("آیا از حذف کامل اطلاعات هسته اطمینان دارید؟")) {
+                appState = { tasks: [], habits: {}, notes: "" };
+                historicalData = { "شنبه": 0, "۱شنبه": 0, "۲شنبه": 0, "۳شنبه": 0, "۴شنبه": 0, "۵شنبه": 0, "جمعه": 0 };
+                localStorage.setItem("STRATOS_LIFETIME_DONE", 0);
+                document.getElementById('notes-area').value = "";
+                localStorage.removeItem(storageKey);
+                localStorage.removeItem(historicalKey);
+                refreshUI();
+                if(document.getElementById('view-analytics').classList.contains('active-view')) {
+                    renderHistoricalChart();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
