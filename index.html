@@ -527,7 +527,6 @@
         }
 
         function renderAnalytics() {
-            // 1. Chart Render
             const days = ["شنبه", "۱شنبه", "۲شنبه", "۳شنبه", "۴شنبه", "۵شنبه", "جمعه"];
             const ids = ["bar-sat", "bar-sun", "bar-mon", "bar-tue", "bar-wed", "bar-thu", "bar-fri"];
             days.forEach((day, i) => {
@@ -539,32 +538,27 @@
                 }
             });
 
-            // 2. Priority Breakdown Render
             if(!histData.priorityStats) histData.priorityStats = { highDone: 0, highTotal: 0, medDone: 0, medTotal: 0, lowDone: 0, lowTotal: 0 };
             const p = histData.priorityStats;
             document.getElementById('progress-high').style.width = p.highTotal > 0 ? Math.round((p.highDone / p.highTotal) * 100) + '%' : '0%';
             document.getElementById('progress-medium').style.width = p.medTotal > 0 ? Math.round((p.medDone / p.medTotal) * 100) + '%' : '0%';
             document.getElementById('progress-low').style.width = p.lowTotal > 0 ? Math.round((p.lowDone / p.lowTotal) * 100) + '%' : '0%';
 
-            // 3. Habit Completion Consistency
             let habits = Object.values(appState.habits);
             let habitDone = habits.filter(h => h.current >= h.target).length;
             let habitRate = habits.length > 0 ? Math.round((habitDone / habits.length) * 100) : 0;
             document.getElementById("stat-habit-streak").innerText = habitRate + '%';
 
-            // 4. Focus Score Calculation (Composite Formula)
             let tasks = appState.tasks;
             let taskDoneCount = tasks.filter(t => t.done).length;
-            let taskRate = tasks.length > 0 ? (taskDoneCount / tasks.length) * 60 : 0; // max 60 points
-            let habitPoints = habits.length > 0 ? (habitDone / habits.length) * 40 : 0; // max 40 points
+            let taskRate = tasks.length > 0 ? (taskDoneCount / tasks.length) * 60 : 0;
+            let habitPoints = habits.length > 0 ? (habitDone / habits.length) * 40 : 0;
             let focusScore = Math.round(taskRate + habitPoints);
             document.getElementById("stat-focus-score").innerText = focusScore;
 
-            // 5. Basic Stats
             document.getElementById("stat-total-completed").innerText = histData.totalCompleted;
             document.getElementById("stat-total-failed").innerText = histData.totalFailed;
 
-            // 6. Personality Calc
             let type = "نیاز به دیتای بیشتر... 🧭";
             if(histData.completionHours && histData.completionHours.length > 3) {
                 let avgHour = histData.completionHours.reduce((a,b)=>a+b,0) / histData.completionHours.length;
