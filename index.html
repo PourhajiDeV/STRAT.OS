@@ -301,11 +301,40 @@
         .tc-neon { background: linear-gradient(135deg, #0f021a, #d946ef); color: #fae8ff; }
         .tc-obsidian { background: linear-gradient(135deg, #050505, #52525b); color: #f4f4f5; }
 
-        .analytics-showcase { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; width: 100%; }
-        .chart-mock { height: 220px; display: flex; align-items: flex-end; justify-content: space-around; padding: 15px 20px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border); border-radius: 18px; margin-top: 10px; width: 100%; }
-        .chart-bar-container { display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; width: 28px; }
-        .chart-bar { width: 100%; background: var(--glow-indigo); border-radius: 6px 6px 0 0; transition: height 1s cubic-bezier(0.4, 0, 0.2, 1); }
-        .chart-label { margin-top: 8px; font-size: 11px; color: var(--text-muted); font-weight: 700; }
+        /* ================== بهبودهای بخش آمار و آنالیز (ANALYTICS UPGRADES) ================== */
+        .analytics-showcase { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; width: 100%; }
+        
+        .chart-mock { height: 260px; display: flex; align-items: flex-end; justify-content: space-around; padding: 25px 20px 15px; background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.35) 100%); border: 1px solid var(--glass-border); border-radius: 20px; margin-top: 15px; width: 100%; position: relative; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        .chart-mock::after { content: ''; position: absolute; top: 20%; left: 0; right: 0; border-top: 1px dashed rgba(255,255,255,0.05); pointer-events: none; }
+        .chart-mock::before { content: ''; position: absolute; top: 60%; left: 0; right: 0; border-top: 1px dashed rgba(255,255,255,0.05); pointer-events: none; }
+        .chart-bar-container { display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; width: 34px; z-index: 2; position: relative; }
+        .chart-bar { width: 100%; background: var(--glow-indigo); border-radius: 8px 8px 0 0; transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; cursor: pointer; box-shadow: 0 0 15px rgba(129, 140, 248, 0.2); }
+        .chart-bar:hover { filter: brightness(1.3); transform: scaleY(1.03); transform-origin: bottom; box-shadow: 0 0 25px rgba(56, 189, 248, 0.6); }
+        .chart-bar-val { position: absolute; top: -25px; font-size: 11px; font-weight: 900; color: #fff; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 6px; border: 1px solid var(--glass-border); opacity: 0; transition: 0.2s; pointer-events: none; white-space: nowrap; }
+        .chart-bar-container:hover .chart-bar-val { opacity: 1; top: -30px; }
+        .chart-label { margin-top: 10px; font-size: 11.5px; color: var(--text-muted); font-weight: 800; font-family: var(--font-main); }
+
+        .donut-wrapper { display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 20px; padding: 20px 0; }
+        .donut-chart { width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(#f43f5e 0% 0%, #fbbf24 0% 0%, #34d399 0% 100%); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.1); }
+        .donut-hole { width: 100px; height: 100px; border-radius: 50%; background: var(--bg-base); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; border: 1px solid var(--glass-border); box-shadow: inset 0 0 15px rgba(0,0,0,0.8); }
+        .donut-hole span { font-size: 22px; font-weight: 950; color: #fff; font-family: var(--font-main); line-height: 1; }
+        .donut-hole small { font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top: 4px; }
+        .donut-legend { display: flex; flex-direction: column; gap: 10px; flex: 1; min-width: 150px; }
+        .legend-item { display: flex; align-items: center; justify-content: space-between; font-size: 12.5px; font-weight: 800; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.04); }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-left: 8px; }
+
+        .heatmap-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 16px; border: 1px solid var(--glass-border); }
+        .hm-cell { aspect-ratio: 1; border-radius: 6px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); transition: 0.2s; position: relative; }
+        .hm-cell:hover { transform: scale(1.2); z-index: 5; border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .hm-cell[data-level="1"] { background: rgba(52, 211, 153, 0.2); border-color: rgba(52, 211, 153, 0.3); }
+        .hm-cell[data-level="2"] { background: rgba(52, 211, 153, 0.45); border-color: rgba(52, 211, 153, 0.6); }
+        .hm-cell[data-level="3"] { background: #34d399; box-shadow: 0 0 10px #34d399; }
+        .hm-cell[data-level="4"] { background: #10b981; box-shadow: 0 0 15px #10b981; }
+
+        .ai-insight-box { background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(6, 182, 212, 0.1)); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 20px; padding: 20px; margin-top: 20px; position: relative; overflow: hidden; }
+        .ai-insight-box::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: linear-gradient(180deg, #818cf8, #22d3ee); }
+        .ai-title { font-size: 13.5px; font-weight: 900; color: #818cf8; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .ai-text { font-size: 12.5px; color: #cbd5e1; line-height: 1.7; font-weight: 600; }
 
         .config-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--glass-border); flex-wrap: wrap; gap: 12px; width: 100%; }
         .config-info { flex: 1; min-width: 200px; }
@@ -374,6 +403,12 @@
         .cal-day { aspect-ratio: 1; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; position: relative; font-weight: 800; font-size: 13.5px; font-family: var(--font-main); overflow: hidden; }
         .cal-day:hover { background: rgba(255,255,255,0.08); transform: scale(1.05); border-color: #818cf8; }
         .cal-day.active-day { background: var(--glow-indigo); color: #fff; border-color: transparent; box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4); }
+        
+        /* بهبود استایل تعطیلات تقویم */
+        .cal-day.holiday-day { border-color: rgba(244, 63, 94, 0.4) !important; color: #fb7185; background: rgba(244, 63, 94, 0.05); }
+        .cal-day.holiday-day::before { content: ''; position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; border-radius: 50%; background: #f43f5e; box-shadow: 0 0 6px #f43f5e; }
+        .cal-day.active-day.holiday-day { background: var(--glow-rose) !important; color: #fff !important; }
+
         .cal-day-indicator { position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: transparent; }
         .cal-day.rate-high .cal-day-indicator { background: #34d399; box-shadow: 0 -2px 8px #34d399; }
         .cal-day.rate-med .cal-day-indicator { background: #fbbf24; box-shadow: 0 -2px 8px #fbbf24; }
@@ -383,9 +418,64 @@
         .report-progress-wrap { width: 100%; background: rgba(255,255,255,0.06); height: 8px; border-radius: 4px; overflow: hidden; }
         .report-progress-bar { height: 100%; background: linear-gradient(90deg, #818cf8, #38bdf8); transition: width 0.5s ease; }
 
+        .fit-hub-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; }
+        .fit-days-bar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; width: 100%; margin-bottom: 25px; }
+        .fit-day-pill { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: 18px; padding: 14px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+        .fit-day-pill:hover { transform: translateY(-4px); background: rgba(255, 255, 255, 0.08); border-color: rgba(34, 211, 238, 0.4); box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+        .fit-day-pill.active { background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(8, 145, 178, 0.3)); border-color: #22d3ee; box-shadow: 0 0 25px rgba(34, 211, 238, 0.25), inset 0 0 10px rgba(34, 211, 238, 0.1); }
+        .fit-day-name { font-size: 14px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+        .fit-day-count { font-size: 11px; font-weight: 800; color: #22d3ee; background: rgba(34, 211, 238, 0.15); padding: 2px 8px; border-radius: 6px; }
+        .fit-day-pill.active .fit-day-count { background: #22d3ee; color: #000; }
+
+        .fit-workspace { display: grid; grid-template-columns: 1.4fr 1fr; gap: 25px; width: 100%; }
+        .fit-card { background: linear-gradient(145deg, rgba(20, 28, 45, 0.6), rgba(8, 12, 22, 0.8)); border: 1px solid var(--glass-border); border-top: 1px solid rgba(255,255,255,0.15); border-radius: 24px; padding: 25px; box-shadow: var(--panel-shadow); position: relative; overflow: hidden; }
+        .fit-card-title { font-size: 16px; font-weight: 950; color: #fff; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; }
+        
+        .fit-exc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; max-height: 480px; overflow-y: auto; padding-right: 4px; }
+        .fit-exc-item { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 14px; position: relative; transition: all 0.3s ease; }
+        .fit-exc-item:hover { transform: translateY(-3px); border-color: rgba(34, 211, 238, 0.5); box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 15px rgba(34, 211, 238, 0.15); background: rgba(255, 255, 255, 0.06); }
+        .fit-exc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        .fit-exc-icon-wrap { width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(8, 145, 178, 0.4)); border: 1px solid rgba(34, 211, 238, 0.3); display: flex; align-items: center; justify-content: center; color: #22d3ee; font-size: 20px; flex-shrink: 0; box-shadow: 0 0 15px rgba(34, 211, 238, 0.2); }
+        .fit-exc-name-wrap { flex: 1; min-width: 0; }
+        .fit-exc-name { font-size: 15px; font-weight: 950; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .fit-exc-cat { font-size: 11px; font-weight: 800; color: #22d3ee; margin-top: 3px; display: inline-block; background: rgba(34, 211, 238, 0.12); padding: 2px 8px; border-radius: 6px; }
+        
+        .fit-exc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: rgba(0,0,0,0.35); padding: 10px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.04); text-align: center; }
+        .fit-stat-box { display: flex; flex-direction: column; }
+        .fit-stat-val { font-size: 15px; font-weight: 950; color: #fff; font-family: var(--font-main); }
+        .fit-stat-lbl { font-size: 10px; font-weight: 700; color: var(--text-muted); margin-top: 2px; }
+        
+        .fit-exc-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 4px; }
+        .btn-fit-log { flex: 1; background: linear-gradient(135deg, #22d3ee, #0891b2); color: #000; font-weight: 950; font-size: 12px; border: none; padding: 10px 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.25s ease; box-shadow: 0 5px 15px rgba(34, 211, 238, 0.25); }
+        .btn-fit-log:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(34, 211, 238, 0.4); filter: brightness(1.1); }
+        .btn-fit-del { width: 36px; height: 36px; border-radius: 12px; background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.25); color: #fb7185; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-fit-del:hover { background: #f43f5e; color: #fff; transform: scale(1.08); }
+
+        .fit-form-grid { display: flex; flex-direction: column; gap: 15px; }
+        .fit-input-row { display: flex; gap: 10px; width: 100%; }
+        .fit-input-wrap { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .fit-input-wrap label { font-size: 12px; font-weight: 800; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+        .fit-input-wrap input, .fit-input-wrap select { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); color: #fff; padding: 12px 14px; border-radius: 14px; font-size: 13px; outline: none; transition: 0.25s; width: 100%; font-weight: 700; }
+        .fit-input-wrap input:focus, .fit-input-wrap select:focus { border-color: #22d3ee; box-shadow: 0 0 15px rgba(34, 211, 238, 0.2); }
+        
+        .fit-cat-selector { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+        .fit-cat-pill { padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 800; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); color: var(--text-muted); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+        .fit-cat-pill:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .fit-cat-pill.active { background: linear-gradient(135deg, rgba(34, 211, 238, 0.25), rgba(8, 145, 178, 0.4)); border-color: #22d3ee; color: #fff; box-shadow: 0 0 15px rgba(34, 211, 238, 0.2); }
+
+        .fit-template-box { background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.15); border-radius: 20px; padding: 18px; margin-top: 10px; }
+        .fit-template-title { font-size: 13px; font-weight: 900; color: #fbbf24; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .fit-template-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+        .btn-template { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: #fde047; padding: 8px 14px; border-radius: 10px; font-size: 11.5px; font-weight: 850; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+        .btn-template:hover { background: #fbbf24; color: #000; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(251, 191, 36, 0.3); }
+
+        .fit-calc-box { background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(79, 70, 229, 0.2)); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 20px; padding: 18px; margin-top: 15px; display: flex; flex-direction: column; gap: 12px; }
+        .fit-calc-title { font-size: 13px; font-weight: 900; color: #c084fc; display: flex; align-items: center; gap: 8px; }
+
         @media (max-width: 1024px) { 
-            .content-grid, .calendar-layout, .timer-grid, .analytics-showcase { grid-template-columns: 1fr; } 
+            .content-grid, .calendar-layout, .timer-grid, .analytics-showcase, .fit-workspace { grid-template-columns: 1fr; } 
             .main-workspace { padding: 25px 20px; } 
+            .fit-days-bar { grid-template-columns: repeat(4, 1fr); }
         }
         
         @media (max-width: 768px) {
@@ -426,6 +516,8 @@
             .goal-header { flex-direction: column; }
             .goal-log-input-group { flex-direction: column; }
             .goal-log-input-group button { width: 100%; padding: 10px 0; }
+            .fit-days-bar { grid-template-columns: repeat(2, 1fr); }
+            .fit-input-row { flex-direction: column; }
         }
 
         @media (max-width: 400px) {
@@ -488,6 +580,7 @@
         <symbol id="i-crown" viewBox="0 0 24 24"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm0 16h20"/></symbol>
         <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
         <symbol id="i-crosshairs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></symbol>
+        <symbol id="i-dumbbell" viewBox="0 0 24 24"><path d="M6 4h12M6 20h12M12 4v16M3 8h6M3 16h6M15 8h6M15 16h6"/></symbol>
     </svg>
 
     <div class="glass-bg-container">
@@ -500,6 +593,9 @@
             <nav class="nav-menu">
                 <div class="nav-item active" onclick="switchAppView('dashboard', this)">
                     <svg class="ico"><use href="#i-chart-pie"/></svg><span>داشبورد استراتژیک</span>
+                </div>
+                <div class="nav-item" onclick="switchAppView('workout', this)">
+                    <svg class="ico"><use href="#i-dumbbell"/></svg><span>برنامه ورزشی حرفه‌ای</span>
                 </div>
                 <div class="nav-item" onclick="switchAppView('goals', this)">
                     <svg class="ico"><use href="#i-flag"/></svg><span>اهداف و چشم‌انداز</span>
@@ -620,6 +716,122 @@
                 </div>
             </section>
 
+            <section id="view-workout" class="app-view">
+                <div class="kpi-grid" style="margin-bottom: 5px;">
+                    <div class="kpi-card" style="border-color: rgba(34, 211, 238, 0.3);">
+                        <svg class="ico bg-icon" style="color: #22d3ee;"><use href="#i-dumbbell"/></svg>
+                        <div class="kpi-label" style="color: #22d3ee;"><svg class="ico"><use href="#i-dumbbell"/></svg> کل حرکات ثبت شده</div>
+                        <div class="kpi-val" id="fit-stat-total" style="color: #fff;">0</div>
+                    </div>
+                    <div class="kpi-card" style="border-color: rgba(16, 185, 129, 0.3);">
+                        <svg class="ico bg-icon" style="color: #34d399;"><use href="#i-check-double"/></svg>
+                        <div class="kpi-label" style="color: #34d399;"><svg class="ico"><use href="#i-check"/></svg> روزهای فعال تمرینی</div>
+                        <div class="kpi-val" id="fit-stat-days" style="color: #34d399;">0 / 7</div>
+                    </div>
+                    <div class="kpi-card" style="border-color: rgba(251, 191, 36, 0.3);">
+                        <svg class="ico bg-icon" style="color: #fbbf24;"><use href="#i-fire"/></svg>
+                        <div class="kpi-label" style="color: #fbbf24;"><svg class="ico"><use href="#i-fire"/></svg> مجموع ست‌های هفته</div>
+                        <div class="kpi-val" id="fit-stat-sets" style="color: #fbbf24;">0</div>
+                    </div>
+                    <div class="kpi-card" style="border-color: rgba(244, 63, 94, 0.3);">
+                        <svg class="ico bg-icon" style="color: #f43f5e;"><use href="#i-bolt"/></svg>
+                        <div class="kpi-label" style="color: #f43f5e;"><svg class="ico"><use href="#i-bolt"/></svg> عضله اصلی (پرتکرار)</div>
+                        <div class="kpi-val" id="fit-stat-muscle" style="color: #fff; font-size: 22px; margin-top: 18px;">-</div>
+                    </div>
+                </div>
+
+                <div class="fit-hub-header">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <input type="file" id="workout-import-file" style="display:none;" accept=".json" onchange="importWorkoutData(event)">
+                        <button class="btn-secondary" style="border-color: #22d3ee; color: #22d3ee;" onclick="document.getElementById('workout-import-file').click()"><svg class="ico"><use href="#i-upload"/></svg><span>ایمپورت فایل برنامه</span></button>
+                        <button class="btn-primary" style="background: var(--glow-cyan); color: #000;" onclick="exportWorkoutData()"><svg class="ico"><use href="#i-download"/></svg><span>بکاپ / اکسپورت برنامه</span></button>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button class="btn-secondary" style="border-color: #fb7185; color: #fb7185;" onclick="clearAllWorkoutData()"><svg class="ico"><use href="#i-trash"/></svg><span>حذف کل برنامه</span></button>
+                    </div>
+                </div>
+
+                <div class="fit-days-bar" id="fit-days-selector"></div>
+
+                <div class="fit-workspace">
+                    <div class="fit-card">
+                        <div class="fit-card-title">
+                            <span><svg class="ico" style="color:#22d3ee;"><use href="#i-list"/></svg> لیست حرکات ورزشی روز: <strong id="active-day-title" style="color:#22d3ee; font-size:18px;">شنبه</strong></span>
+                            <span class="badge low" id="active-day-badge">0 حرکت فعال</span>
+                        </div>
+                        <div class="fit-exc-grid" id="fit-exc-container"></div>
+                    </div>
+
+                    <div class="fit-card">
+                        <div class="fit-card-title"><span><svg class="ico" style="color:#fbbf24;"><use href="#i-plus"/></svg> طراحی و افزودن حرکت جدید</span></div>
+                        <div class="fit-form-grid">
+                            <div class="fit-input-wrap">
+                                <label><svg class="ico"><use href="#i-dumbbell"/></svg> نام حرکت تمرینی:</label>
+                                <input type="text" id="work-exc-name" placeholder="مثال: پرس بالاسینه دمبل / اسکات...">
+                            </div>
+
+                            <div class="fit-input-wrap">
+                                <label><svg class="ico"><use href="#i-bullseye"/></svg> عضله هدف (دسته بندی):</label>
+                                <div class="fit-cat-selector">
+                                    <div class="fit-cat-pill active" onclick="selectFitCat('سینه', this)">💪 سینه</div>
+                                    <div class="fit-cat-pill" onclick="selectFitCat('زیربغل و پشت', this)">🦾 زیربغل</div>
+                                    <div class="fit-cat-pill" onclick="selectFitCat('سرشانه', this)">🏋️ سرشانه</div>
+                                    <div class="fit-cat-pill" onclick="selectFitCat('جلو بازو', this)">💥 جلو بازو</div>
+                                    <div class="fit-cat-pill" onclick="selectFitCat('پشت بازو', this)">🔥 پشت بازو</div>
+                                    <div class="fit-cat-pill" onclick="selectFitCat('پا', this)">🦵 پا</div>
+                                    <div class="fit-cat-pill" onclick="selectFitCat('شکم و فیله', this)">⚡ شکم</div>
+                                    <div class="fit-cat-pill" onclick="selectFitCat('هوازی', this)">🏃 هوازی</div>
+                                </div>
+                                <input type="hidden" id="work-exc-category" value="سینه">
+                            </div>
+
+                            <div class="fit-input-row">
+                                <div class="fit-input-wrap">
+                                    <label>تعداد ست:</label>
+                                    <input type="number" id="work-exc-sets" value="4" style="text-align:center;">
+                                </div>
+                                <div class="fit-input-wrap">
+                                    <label>تکرار هر ست:</label>
+                                    <input type="number" id="work-exc-reps" value="12" style="text-align:center;">
+                                </div>
+                                <div class="fit-input-wrap" style="flex: 1.3;">
+                                    <label>وزنه (Kg/Lb):</label>
+                                    <input type="text" id="work-exc-weight" placeholder="مثال: 20kg" style="text-align:center;">
+                                </div>
+                            </div>
+
+                            <div class="fit-input-wrap">
+                                <label><svg class="ico"><use href="#i-clock"/></svg> زمان استراحت بین ست‌ها (ثانیه):</label>
+                                <input type="number" id="work-exc-rest" value="60" style="text-align:center;">
+                            </div>
+
+                            <button class="btn-primary" style="background: linear-gradient(135deg, #22d3ee, #0891b2); color: #000; font-weight: 950; padding: 14px; margin-top: 5px; font-size: 14px;" onclick="addNewWorkoutExercise()">
+                                <svg class="ico"><use href="#i-plus"/></svg><span>افزودن به برنامه روز</span>
+                            </button>
+                        </div>
+
+                        <div class="fit-template-box">
+                            <div class="fit-template-title"><svg class="ico"><use href="#i-bolt"/></svg> بارگذاری سریع برنامه‌های فوق‌حرفه‌ای (الیت):</div>
+                            <div class="fit-template-pills">
+                                <button class="btn-template" onclick="loadEliteRoutine('ppl')">🔥 برنامه PPL (پوش - پول - لگ)</button>
+                                <button class="btn-template" onclick="loadEliteRoutine('fullbody')">⚡ برنامه فول بادی (۳ روزه)</button>
+                                <button class="btn-template" onclick="loadEliteRoutine('bro')">🦾 تفکیک کلاسیک ۵ روزه (Bro Split)</button>
+                            </div>
+                        </div>
+
+                        <div class="fit-calc-box">
+                            <div class="fit-calc-title"><svg class="ico"><use href="#i-brain"/></svg> محاسبه‌گر سریع یک تکرار بیشینه (1RM Calculator):</div>
+                            <div class="fit-input-row" style="align-items: flex-end;">
+                                <div class="fit-input-wrap"><label>وزنه (Kg):</label><input type="number" id="calc-weight" placeholder="80" style="text-align:center; padding: 8px;"></div>
+                                <div class="fit-input-wrap"><label>تکرار انجام شده:</label><input type="number" id="calc-reps" placeholder="6" style="text-align:center; padding: 8px;"></div>
+                                <button class="btn-secondary" style="border-color:#c084fc; color:#c084fc; height:38px; padding: 0 15px;" onclick="calculate1RM()">محاسبه</button>
+                            </div>
+                            <div style="font-size: 12.5px; font-weight: 800; color: #fff; text-align: center; margin-top: 4px;" id="calc-result-box">تخمین رکورد شما: <span style="color:#fbbf24;">-</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section id="view-goals" class="app-view">
                 <div class="panel" style="margin-bottom: 5px;">
                     <div class="panel-title"><span><svg class="ico"><use href="#i-flag"/></svg> ثبت هدف یا چشم‌انداز استراتژیک جدید</span></div>
@@ -688,7 +900,7 @@
                             <span id="cal-month-title" style="font-size: 14px; color: #818cf8;">...</span>
                         </div>
                         <div class="calendar-grid">
-                            <div class="cal-header">ش</div><div class="cal-header">۱ش</div><div class="cal-header">۲ش</div><div class="cal-header">۳ش</div><div class="cal-header">۴ش</div><div class="cal-header">۵ش</div><div class="cal-header">ج</div>
+                            <div class="cal-header">ش</div><div class="cal-header">۱ش</div><div class="cal-header">۲ش</div><div class="cal-header">۳ش</div><div class="cal-header">۴ش</div><div class="cal-header">۵ش</div><div class="cal-header" style="color:#fb7185;">ج</div>
                         </div>
                         <div class="calendar-grid" id="cal-days-container" style="margin-top: 5px;"></div>
                     </div>
@@ -696,6 +908,10 @@
                     <div class="panel">
                         <div class="panel-title"><span><svg class="ico"><use href="#i-chart-pie"/></svg> <span id="selected-day-title">گزارش روز انتخاب شده</span></span></div>
                         <div class="day-report-box">
+                            <div class="report-stat-line" id="holiday-info-line" style="display:none; color:#fb7185; border-bottom:1px dashed rgba(255,255,255,0.1); padding-bottom:10px;">
+                                <span>🎉 وضعیت تعطیلی:</span>
+                                <strong id="rep-holiday-title">تعطیل رسمی</strong>
+                            </div>
                             <div class="report-stat-line">
                                 <span>تسک‌های انجام‌شده نسبت به کل:</span>
                                 <strong id="rep-task-ratio" style="color:#34d399; font-family:var(--font-main);">0 / 0</strong>
@@ -820,61 +1036,81 @@
                 </div>
             </section>
 
+            <!-- ================== بخش آمار و آنالیز جدید و فوق‌العاده زیبا ================== -->
             <section id="view-analytics" class="app-view">
+                <div class="kpi-grid" style="margin-bottom: 5px;">
+                    <div class="kpi-card" style="border-color: rgba(129, 140, 248, 0.4);">
+                        <svg class="ico bg-icon" style="color: #818cf8;"><use href="#i-chart-line"/></svg>
+                        <div class="kpi-label" style="color: #818cf8;"><svg class="ico"><use href="#i-chart-line"/></svg> نرخ بهره‌وری کل</div>
+                        <div class="kpi-val" id="stat-overall-rate" style="color: #fff;">0%</div>
+                    </div>
+                    <div class="kpi-card" style="border-color: rgba(52, 211, 153, 0.4);">
+                        <svg class="ico bg-icon" style="color: #34d399;"><use href="#i-check-double"/></svg>
+                        <div class="kpi-label" style="color: #34d399;"><svg class="ico"><use href="#i-check"/></svg> کل تسک‌های موفق</div>
+                        <div class="kpi-val" id="stat-total-completed" style="color: #34d399;">0</div>
+                    </div>
+                    <div class="kpi-card" style="border-color: rgba(251, 191, 36, 0.4);">
+                        <svg class="ico bg-icon" style="color: #fbbf24;"><use href="#i-brain"/></svg>
+                        <div class="kpi-label" style="color: #fbbf24;"><svg class="ico"><use href="#i-brain"/></svg> شاخص تمرکز امروز</div>
+                        <div class="kpi-val" id="stat-focus-score" style="color: #fbbf24;">0</div>
+                    </div>
+                    <div class="kpi-card" style="border-color: rgba(244, 63, 94, 0.4);">
+                        <svg class="ico bg-icon" style="color: #f43f5e;"><use href="#i-fire"/></svg>
+                        <div class="kpi-label" style="color: #f43f5e;"><svg class="ico"><use href="#i-fire"/></svg> پایداری زنجیره عادات</div>
+                        <div class="kpi-val" id="stat-habit-streak" style="color: #fff;">0%</div>
+                    </div>
+                </div>
+
                 <div class="analytics-showcase">
                     <div class="panel">
-                        <div class="panel-title"><span><svg class="ico"><use href="#i-chart-line"/></svg> فرکانس موفقیت هفته</span></div>
+                        <div class="panel-title"><span><svg class="ico"><use href="#i-chart-line"/></svg> فرکانس موفقیت ۷ روز اخیر (تیک‌ها)</span><span class="badge low">LIVE CHART</span></div>
                         <div class="chart-mock">
-                            <div class="chart-bar-container"><div class="chart-bar" id="bar-sat"></div><div class="chart-label">ش</div></div>
-                            <div class="chart-bar-container"><div class="chart-bar" id="bar-sun"></div><div class="chart-label">۱ش</div></div>
-                            <div class="chart-bar-container"><div class="chart-bar" id="bar-mon"></div><div class="chart-label">۲ش</div></div>
-                            <div class="chart-bar-container"><div class="chart-bar" id="bar-tue"></div><div class="chart-label">۳ش</div></div>
-                            <div class="chart-bar-container"><div class="chart-bar" id="bar-wed"></div><div class="chart-label">۴ش</div></div>
-                            <div class="chart-bar-container"><div class="chart-bar" id="bar-thu"></div><div class="chart-label">۵ش</div></div>
-                            <div class="chart-bar-container"><div class="chart-bar" id="bar-fri"></div><div class="chart-label">ج</div></div>
+                            <div class="chart-bar-container"><div class="chart-bar-val" id="val-sat">0%</div><div class="chart-bar" id="bar-sat"></div><div class="chart-label">ش</div></div>
+                            <div class="chart-bar-container"><div class="chart-bar-val" id="val-sun">0%</div><div class="chart-bar" id="bar-sun"></div><div class="chart-label">۱ش</div></div>
+                            <div class="chart-bar-container"><div class="chart-bar-val" id="val-mon">0%</div><div class="chart-bar" id="bar-mon"></div><div class="chart-label">۲ش</div></div>
+                            <div class="chart-bar-container"><div class="chart-bar-val" id="val-tue">0%</div><div class="chart-bar" id="bar-tue"></div><div class="chart-label">۳ش</div></div>
+                            <div class="chart-bar-container"><div class="chart-bar-val" id="val-wed">0%</div><div class="chart-bar" id="bar-wed"></div><div class="chart-label">۴ش</div></div>
+                            <div class="chart-bar-container"><div class="chart-bar-val" id="val-thu">0%</div><div class="chart-bar" id="bar-thu"></div><div class="chart-label">۵ش</div></div>
+                            <div class="chart-bar-container"><div class="chart-bar-val" id="val-fri">0%</div><div class="chart-bar" id="bar-fri"></div><div class="chart-label">ج</div></div>
                         </div>
 
-                        <div class="panel-title" style="margin-top:25px;"><span><svg class="ico"><use href="#i-layer"/></svg> تفکیک موفقیت بر اساس اولویت</span></div>
-                        <div class="config-row">
-                            <div class="config-info"><h4>اولویت بالا (High)</h4></div>
-                            <div class="progress-bar-container"><div id="progress-high" class="progress-bar-fill" style="background:var(--glow-rose); width:0%;"></div></div>
-                        </div>
-                        <div class="config-row">
-                            <div class="config-info"><h4>اولویت متوسط (Med)</h4></div>
-                            <div class="progress-bar-container"><div id="progress-medium" class="progress-bar-fill" style="background:var(--glow-amber); width:0%;"></div></div>
-                        </div>
-                        <div class="config-row">
-                            <div class="config-info"><h4>اولویت عادی (Low)</h4></div>
-                            <div class="progress-bar-container"><div id="progress-low" class="progress-bar-fill" style="background:var(--glow-emerald); width:0%;"></div></div>
+                        <div class="ai-insight-box">
+                            <div class="ai-title"><svg class="ico"><use href="#i-astro"/></svg> تحلیل هوشمند استراتژیک (AI INSIGHTS):</div>
+                            <div class="ai-text" id="stat-ai-recommendation">در حال تحلیل الگوهای رفتاری و داده‌های بهره‌وری شما...</div>
                         </div>
                     </div>
 
                     <div class="panel">
-                        <div class="panel-title"><span><svg class="ico"><use href="#i-brain"/></svg> مرکز تحلیل رفتار و راندمان متمرکز</span></div>
-                        <div class="config-row" style="background: rgba(255,255,255,0.02); padding: 14px; border-radius: 16px;">
-                            <div class="config-info">
-                                <h4>شاخص تمرکز امروز (Focus Score)</h4>
-                                <p>محاسبه ترکیبی بر اساس تسک‌ها و پایداری عادات</p>
+                        <div class="panel-title"><span><svg class="ico"><use href="#i-layer"/></svg> تفکیک اولویت‌ها و تعادل کاری</span></div>
+                        <div class="donut-wrapper">
+                            <div class="donut-chart" id="priority-donut">
+                                <div class="donut-hole">
+                                    <span id="donut-total-val">0</span>
+                                    <small>کل اهداف</small>
+                                </div>
                             </div>
-                            <span id="stat-focus-score" style="color: #fbbf24; font-weight: 950; font-size: 26px; font-family: var(--font-main);">0</span>
+                            <div class="donut-legend">
+                                <div class="legend-item"><span style="color:#fb7185;"><span class="legend-dot" style="background:#fb7185;"></span>اولویت بالا (High)</span><strong id="legend-high">0%</strong></div>
+                                <div class="legend-item"><span style="color:#fbbf24;"><span class="legend-dot" style="background:#fbbf24;"></span>اولویت متوسط (Med)</span><strong id="legend-med">0%</strong></div>
+                                <div class="legend-item"><span style="color:#34d399;"><span class="legend-dot" style="background:#34d399;"></span>اولویت عادی (Low)</span><strong id="legend-low">0%</strong></div>
+                            </div>
                         </div>
+
+                        <div class="panel-title" style="margin-top: 15px; margin-bottom: 5px;"><span><svg class="ico"><use href="#i-brain"/></svg> پروفایل شناختی و ریسک فرسودگی</span></div>
                         <div class="config-row">
                             <div class="config-info"><h4>تیپ شخصیتی بهره‌وری</h4><p>بر اساس زمان طلاییِ بیشترین تیک‌های شما</p></div>
                             <span id="stat-personality" style="color: #38bdf8; font-weight: 800; font-size: 13.5px;">در حال تحلیل...</span>
                         </div>
-                        <div class="config-row">
-                            <div class="config-info"><h4>پایداری زنجیره عادات</h4><p>میزان عادات امروز که کاملاً فتح شده‌اند</p></div>
-                            <span id="stat-habit-streak" style="color: #34d399; font-weight: 800; font-size: 15px; font-family: var(--font-main);">0%</span>
-                        </div>
-                        <div class="config-row">
-                            <div class="config-info"><h4>کل تسک‌های موفق سیستم</h4><p>تعداد کل وظایف انجام‌شده از ابتدا تاکنون</p></div>
-                            <span id="stat-total-completed" style="color: #818cf8; font-weight: 800; font-size: 17px; font-family: var(--font-main);">0</span>
-                        </div>
-                        <div class="config-row">
-                            <div class="config-info"><h4>کل تسک‌های سوخته سیستم</h4><p>وظایفی که ددلاین آن‌ها گذشت یا لغو شدند</p></div>
-                            <span id="stat-total-failed" style="color: #fb7185; font-weight: 800; font-size: 17px; font-family: var(--font-main);">0</span>
+                        <div class="config-row" style="border-bottom: none;">
+                            <div class="config-info"><h4>شاخص خطر فرسودگی (Burnout Risk)</h4><p>محاسبه نسبت تسک‌های سوخته به کل فعالیت‌ها</p></div>
+                            <span id="stat-burnout" class="badge low" style="font-size: 12px;">ایمن (Low Risk)</span>
                         </div>
                     </div>
+                </div>
+
+                <div class="panel" style="margin-top: 5px;">
+                    <div class="panel-title"><span><svg class="ico"><use href="#i-calendar"/></svg> هیت‌مپ فعالیت استراتژیک ۳۰ روز گذشته (Productivity Grid)</span><span style="font-size:11px; color:var(--text-muted);">هر مربع = یک روز کاری</span></div>
+                    <div class="heatmap-grid" id="analytics-heatmap"></div>
                 </div>
             </section>
 
@@ -891,7 +1127,7 @@
                         <div class="db-status-box" style="margin-bottom: 0; background: rgba(244, 63, 94, 0.05); border-color: rgba(244, 63, 94, 0.2);">
                             <div class="db-status-info">
                                 <h4 style="color: #fb7185;"><svg class="ico"><use href="#i-heart" style="fill: #fb7185; stroke: none;"/></svg> تقدیم ویژه</h4>
-                                <p>توسعه‌یافته با عشق و احترام، به طور اختصاصی برای <strong>Haniyeh</strong></p>
+                                <p>توسعه‌یافته با عشق و احترام، به طور اختصاصی برای <strong>هانیه</strong></p>
                             </div>
                             <span class="badge high">SPECIAL EDITION</span>
                         </div>
@@ -913,7 +1149,7 @@
                         </div>
                         <div class="config-row" style="border-bottom: none;">
                             <div class="config-info"><h4>نسخه و وضعیت هسته</h4><p>الگوریتم‌های ۸‌گانه زمان‌سنجی، استریک و تحلیل رفتار</p></div>
-                            <span class="badge low">v3.5 STRAT.OS</span>
+                            <span class="badge low">v2.0 STRAT.OS</span>
                         </div>
                     </div>
                 </div>
@@ -1011,8 +1247,25 @@
         const historicalKey = "STRATOS_HISTORICAL";
         let fileHandle = null;
 
+        // دیتابیس کاملاً آفلاین تعطیلات ایران (تطبیق با ماه و روز شمسی)
+        const IRAN_HOLIDAYS_OFFLINE = {
+            "1/1": "جشن نوروز - تعطیل رسمی", "1/2": "عید نوروز - تعطیل رسمی", "1/3": "عید نوروز - تعطیل رسمی", "1/4": "عید نوروز - تعطیل رسمی",
+            "1/12": "روز جمهوری اسلامی", "1/13": "روز طبیعت (سیزده بدر)",
+            "3/14": "رحلت امام خمینی", "3/15": "قیام ۱۵ خرداد",
+            "11/22": "پیروزی انقلاب اسلامی", "12/29": "ملی شدن صنعت نفت"
+        };
+
+        function getIranianHoliday(dateObj) {
+            if (dateObj.getDay() === 5) return "جمعه (تعطیل پایان هفته)";
+            try {
+                let parts = new Intl.DateTimeFormat('en-US-u-ca-persian', {month:'numeric', day:'numeric'}).format(dateObj).split('/');
+                let md = parts[0] + '/' + parts[1];
+                return IRAN_HOLIDAYS_OFFLINE[md] || null;
+            } catch(e) { return null; }
+        }
+
         let appState = JSON.parse(localStorage.getItem(storageKey)) || {
-            tasks: [], habits: {}, goals: [], notes: "", 
+            tasks: [], habits: {}, goals: [], workoutProgram: {}, notes: "", 
             isDayEnded: false, lastDateStr: new Date().toDateString(),
             calLang: "fa", timezone: "Asia/Tehran", theme: "theme-cyberpunk", profileTheme: "pt-cyber",
             userName: "فرمانده استراتژیک", userRole: "STRAT.OS ELITE OPERATOR",
@@ -1021,6 +1274,10 @@
             streak: 0, lastStreakDate: "", points: 0, dailyPointsToday: 0, lastPointsDate: "", weeklyBonusDate: ""
         };
 
+        if(!appState.workoutProgram || !appState.workoutProgram["شنبه"]) {
+            appState.workoutProgram = { "شنبه": [], "یکشنبه": [], "دوشنبه": [], "سه_شنبه": [], "چهارشنبه": [], "پنجشنبه": [], "جمعه": [] };
+        }
+
         let histData = JSON.parse(localStorage.getItem(historicalKey)) || {
             days: {"شنبه":0,"۱شنبه":0,"۲شنبه":0,"۳شنبه":0,"۴شنبه":0,"۵شنبه":0,"جمعه":0},
             totalCompleted: 0, totalFailed: 0, completionHours: [],
@@ -1028,6 +1285,7 @@
         };
 
         let selectedCalDateStr = new Date().toDateString();
+        let activeWorkoutDay = "شنبه";
 
         document.addEventListener("DOMContentLoaded", () => {
             document.body.className = appState.theme || 'theme-cyberpunk';
@@ -1066,6 +1324,8 @@
             setInterval(checkTaskDeadlines, 10000);
             refreshUI();
             generateCalendarGrid();
+            renderWorkoutHub();
+            renderAnalytics();
         });
 
         function changeDbEngine() {
@@ -1248,6 +1508,7 @@
             
             let titles = { 
                 dashboard: "داشبورد استراتژیک", 
+                workout: "برنامه ورزشی حرفه‌ای STRAT.OS",
                 goals: "اهداف و چشم‌انداز کلان",
                 timers: "زمان‌سنج و تمرکز", 
                 calendar: "تقویم و گزارش‌ها", 
@@ -1258,6 +1519,7 @@
             };
             document.getElementById('view-title').innerText = titles[viewId] || "STRAT.OS";
 
+            if(viewId === 'workout') renderWorkoutHub();
             if(viewId === 'goals') renderGoals();
             if(viewId === 'analytics') renderAnalytics();
             if(viewId === 'profile') renderProfileStats();
@@ -1368,12 +1630,14 @@
                 if(appState.lastPointsDate !== todayStr) { appState.dailyPointsToday = 0; appState.lastPointsDate = todayStr; }
 
                 if(!histData.priorityStats) histData.priorityStats = { highDone: 0, highTotal: 0, medDone: 0, medTotal: 0, lowDone: 0, lowTotal: 0 };
+                
+                let pts = t.priority === 'high' ? 5 : (t.priority === 'medium' ? 3 : 2);
+                
                 if(t.done) {
                     histData.totalCompleted++;
                     histData.completionHours.push(new Date().getHours());
                     histData.priorityStats[t.priority + 'Done']++;
 
-                    let pts = t.priority === 'high' ? 5 : (t.priority === 'medium' ? 3 : 2);
                     let available = 15 - (appState.dailyPointsToday || 0);
                     let toAdd = Math.min(pts, Math.max(0, available));
                     appState.dailyPointsToday = (appState.dailyPointsToday || 0) + toAdd;
@@ -1397,6 +1661,9 @@
                 } else {
                     histData.totalCompleted = Math.max(0, histData.totalCompleted - 1);
                     histData.priorityStats[t.priority + 'Done'] = Math.max(0, histData.priorityStats[t.priority + 'Done'] - 1);
+
+                    appState.dailyPointsToday = Math.max(0, (appState.dailyPointsToday || 0) - pts);
+                    appState.points = Math.max(0, (appState.points || 0) - pts);
                 }
                 refreshUI();
             }
@@ -1413,7 +1680,12 @@
             const t = appState.tasks.find(x => x.id === id);
             if(t && histData.priorityStats) {
                 histData.priorityStats[t.priority + 'Total'] = Math.max(0, histData.priorityStats[t.priority + 'Total'] - 1);
-                if(t.done) histData.priorityStats[t.priority + 'Done'] = Math.max(0, histData.priorityStats[t.priority + 'Done'] - 1);
+                if(t.done) {
+                    histData.priorityStats[t.priority + 'Done'] = Math.max(0, histData.priorityStats[t.priority + 'Done'] - 1);
+                    let pts = t.priority === 'high' ? 5 : (t.priority === 'medium' ? 3 : 2);
+                    appState.dailyPointsToday = Math.max(0, (appState.dailyPointsToday || 0) - pts);
+                    appState.points = Math.max(0, (appState.points || 0) - pts);
+                }
             }
             appState.tasks = appState.tasks.filter(t => t.id !== id);
             refreshUI();
@@ -1439,6 +1711,282 @@
         function adjustHabit(id, val) { if(appState.habits[id]) { appState.habits[id].current = Math.max(0, appState.habits[id].current + val); refreshUI(); } }
         function deleteHabit(id) { delete appState.habits[id]; refreshUI(); }
         function saveCurrentNotes() { appState.notes = document.getElementById('notes-area').value; saveToDatabase(); }
+
+        function selectFitCat(cat, el) {
+            document.querySelectorAll('.fit-cat-selector .fit-cat-pill').forEach(p => p.classList.remove('active'));
+            if(el) el.classList.add('active');
+            document.getElementById('work-exc-category').value = cat;
+        }
+
+        function selectWorkoutDay(day) {
+            activeWorkoutDay = day;
+            renderWorkoutHub();
+        }
+
+        function addNewWorkoutExercise() {
+            const name = document.getElementById('work-exc-name').value.trim();
+            if(!name) return;
+            const cat = document.getElementById('work-exc-category').value || "سینه";
+            const sets = document.getElementById('work-exc-sets').value || "4";
+            const reps = document.getElementById('work-exc-reps').value || "12";
+            const weight = document.getElementById('work-exc-weight').value || "وزن بدن";
+            const rest = document.getElementById('work-exc-rest').value || "60";
+
+            if(!appState.workoutProgram[activeWorkoutDay]) appState.workoutProgram[activeWorkoutDay] = [];
+            
+            appState.workoutProgram[activeWorkoutDay].push({
+                id: Date.now(), name: name, category: cat, sets: sets, reps: reps, weight: weight, rest: rest, logged: false
+            });
+
+            document.getElementById('work-exc-name').value = '';
+            document.getElementById('work-exc-weight').value = '';
+
+            saveToDatabase();
+            renderWorkoutHub();
+        }
+
+        function deleteWorkoutExercise(day, id) {
+            appState.workoutProgram[day] = appState.workoutProgram[day].filter(x => x.id !== id);
+            saveToDatabase();
+            renderWorkoutHub();
+        }
+
+        function logWorkoutExerciseAsTask(day, id) {
+            const exercise = appState.workoutProgram[day].find(x => x.id === id);
+            if(!exercise) return;
+            
+            appState.tasks.push({
+                id: Date.now(),
+                text: `🏋️ تمرین: ${exercise.name} (${exercise.sets} ست × ${exercise.reps} تکرار)`,
+                priority: "medium",
+                start: "",
+                end: "",
+                done: false,
+                failed: false
+            });
+            
+            saveToDatabase();
+            refreshUI();
+            alert(`حرکت «${exercise.name}» به لیست تسک‌های استراتژیک امروز اضافه شد!`);
+        }
+
+        function calculate1RM() {
+            const w = parseFloat(document.getElementById('calc-weight').value);
+            const r = parseInt(document.getElementById('calc-reps').value);
+            const resBox = document.getElementById('calc-result-box');
+            if(!w || !r || r < 1) { resBox.innerHTML = `تخمین رکورد شما: <span style="color:#fb7185;">اطلاعات نامعتبر</span>`; return; }
+            
+            const oneRm = Math.round(w * (1 + r / 30));
+            resBox.innerHTML = `تخمین رکورد ۱ تکرار بیشینه (1RM): <span style="color:#34d399; font-size:16px;">${oneRm} کیلوگرم</span>`;
+        }
+
+        function clearAllWorkoutData() {
+            if(confirm("آیا از حذف کل برنامه ورزشی هفته اطمینان دارید؟")) {
+                appState.workoutProgram = { "شنبه": [], "یکشنبه": [], "دوشنبه": [], "سه_شنبه": [], "چهارشنبه": [], "پنجشنبه": [], "جمعه": [] };
+                saveToDatabase();
+                renderWorkoutHub();
+            }
+        }
+
+        function loadEliteRoutine(type) {
+            if(!confirm("با بارگذاری برنامه جدید، تمرینات فعلی شما جایگزین می‌شوند. موافقید؟")) return;
+            
+            if(type === 'ppl') {
+                appState.workoutProgram = {
+                    "شنبه": [
+                        { id: 1, name: "پرس سینه هالتر", category: "سینه", sets: "4", reps: "10", weight: "70kg", rest: "90" },
+                        { id: 2, name: "پرس بالاسینه دمبل", category: "سینه", sets: "4", reps: "12", weight: "25kg", rest: "75" },
+                        { id: 3, name: "پرس سرشانه دمبل نشسته", category: "سرشانه", sets: "4", reps: "10", weight: "20kg", rest: "75" },
+                        { id: 4, name: "نشر جانب سیمکش", category: "سرشانه", sets: "3", reps: "15", weight: "15kg", rest: "60" },
+                        { id: 5, name: "پشت بازو سیمکش ایستاده", category: "پشت بازو", sets: "4", reps: "12", weight: "25kg", rest: "60" }
+                    ],
+                    "یکشنبه": [
+                        { id: 6, name: "بارفیکس دست باز", category: "زیربغل و پشت", sets: "4", reps: "8", weight: "وزن بدن", rest: "90" },
+                        { id: 7, name: "زیربغل قایقی سیمکش", category: "زیربغل و پشت", sets: "4", reps: "12", weight: "50kg", rest: "75" },
+                        { id: 8, name: "فیس پول (Face Pull)", category: "سرشانه", sets: "3", reps: "15", weight: "20kg", rest: "60" },
+                        { id: 9, name: "جلو بازو هالتر ایستاده", category: "جلو بازو", sets: "4", reps: "10", weight: "30kg", rest: "60" },
+                        { id: 10, name: "جلو بازو چکشی دمبل", category: "جلو بازو", sets: "3", reps: "12", weight: "15kg", rest: "60" }
+                    ],
+                    "دوشنبه": [
+                        { id: 11, name: "اسکات هالتر از پشت", category: "پا", sets: "4", reps: "8", weight: "90kg", rest: "120" },
+                        { id: 12, name: "پرس پا دستگاه", category: "پا", sets: "4", reps: "12", weight: "150kg", rest: "90" },
+                        { id: 13, name: "پشت پا ماشین خوابیده", category: "پا", sets: "4", reps: "12", weight: "40kg", rest: "60" },
+                        { id: 14, name: "ساق پا ایستاده", category: "پا", sets: "4", reps: "20", weight: "60kg", rest: "45" },
+                        { id: 15, name: "کرانچ شکم خلبانی", category: "شکم و فیله", sets: "4", reps: "15", weight: "وزن بدن", rest: "45" }
+                    ],
+                    "سه_شنبه": [],
+                    "چهارشنبه": [
+                        { id: 16, name: "پرس سینه دمبل", category: "سینه", sets: "4", reps: "10", weight: "30kg", rest: "90" },
+                        { id: 17, name: "قفسه سینه دستگاه (پک دک)", category: "سینه", sets: "3", reps: "15", weight: "40kg", rest: "60" },
+                        { id: 18, name: "نشر از جلو دمبل", category: "سرشانه", sets: "3", reps: "12", weight: "12kg", rest: "60" },
+                        { id: 19, name: "پشت بازو هالتر خوابیده (سوپینِیت)", category: "پشت بازو", sets: "4", reps: "10", weight: "30kg", rest: "75" }
+                    ],
+                    "پنجشنبه": [
+                        { id: 20, name: "لت از جلو دست باز (سیمکش)", category: "زیربغل و پشت", sets: "4", reps: "12", weight: "55kg", rest: "75" },
+                        { id: 21, name: "زیربغل دمبل تک خم", category: "زیربغل و پشت", sets: "4", reps: "10", weight: "25kg", rest: "75" },
+                        { id: 22, name: "جلو بازو لاری دستگاه", category: "جلو بازو", sets: "4", reps: "12", weight: "25kg", rest: "60" },
+                        { id: 23, name: "پلانک ایزومتریک", category: "شکم و فیله", sets: "3", reps: "1", weight: "60 ثانیه", rest: "45" }
+                    ],
+                    "جمعه": []
+                };
+            } else if(type === 'fullbody') {
+                appState.workoutProgram = {
+                    "شنبه": [
+                        { id: 31, name: "اسکات هالتر", category: "پا", sets: "3", reps: "10", weight: "80kg", rest: "90" },
+                        { id: 32, name: "پرس سینه هالتر", category: "سینه", sets: "3", reps: "10", weight: "65kg", rest: "90" },
+                        { id: 33, name: "زیربغل قایقی", category: "زیربغل و پشت", sets: "3", reps: "12", weight: "45kg", rest: "75" },
+                        { id: 34, name: "پرس سرشانه دمبل", category: "سرشانه", sets: "3", reps: "12", weight: "18kg", rest: "60" }
+                    ],
+                    "یکشنبه": [],
+                    "دوشنبه": [
+                        { id: 35, name: "ددلیفت رومانیایی", category: "پا", sets: "3", reps: "10", weight: "70kg", rest: "90" },
+                        { id: 36, name: "لت از جلو سیمکش", category: "زیربغل و پشت", sets: "3", reps: "12", weight: "50kg", rest: "75" },
+                        { id: 37, name: "پرس بالاسینه دمبل", category: "سینه", sets: "3", reps: "10", weight: "22kg", rest: "75" },
+                        { id: 38, name: "جلو بازو دمبل تناوبی", category: "جلو بازو", sets: "3", reps: "12", weight: "14kg", rest: "60" }
+                    ],
+                    "سه_شنبه": [],
+                    "چهارشنبه": [
+                        { id: 39, name: "پرس پا ماشین", category: "پا", sets: "3", reps: "15", weight: "140kg", rest: "90" },
+                        { id: 40, name: "بارفیکس", category: "زیربغل و پشت", sets: "3", reps: "8", weight: "وزن بدن", rest: "75" },
+                        { id: 41, name: "شنا سوئدی دیپ", category: "سینه", sets: "3", reps: "15", weight: "وزن بدن", rest: "60" },
+                        { id: 42, name: "کرانچ شکم روی میز", category: "شکم و فیله", sets: "4", reps: "20", weight: "وزن بدن", rest: "45" }
+                    ],
+                    "پنجشنبه": [],
+                    "جمعه": []
+                };
+            } else {
+                appState.workoutProgram = {
+                    "شنبه": [ { id: 51, name: "پرس سینه هالتر", category: "سینه", sets: "4", reps: "10", weight: "75kg", rest: "90" }, { id: 52, name: "پرس بالاسینه دمبل", category: "سینه", sets: "4", reps: "12", weight: "26kg", rest: "75" }, { id: 53, name: "قفسه سینه دمبل", category: "سینه", sets: "4", reps: "12", weight: "16kg", rest: "60" }, { id: 54, name: "کراس اور سیمکش", category: "سینه", sets: "4", reps: "15", weight: "20kg", rest: "60" } ],
+                    "یکشنبه": [ { id: 55, name: "لت از جلو دست باز", category: "زیربغل و پشت", sets: "4", reps: "10", weight: "60kg", rest: "90" }, { id: 56, name: "زیربغل هالتر خم", category: "زیربغل و پشت", sets: "4", reps: "10", weight: "60kg", rest: "90" }, { id: 57, name: "زیربغل قایقی دست جمع", category: "زیربغل و پشت", sets: "4", reps: "12", weight: "55kg", rest: "75" }, { id: 58, name: "پول اور دمبل", category: "زیربغل و پشت", sets: "3", reps: "15", weight: "22kg", rest: "60" } ],
+                    "دوشنبه": [ { id: 59, name: "پرس سرشانه هالتر از جلو", category: "سرشانه", sets: "4", reps: "10", weight: "45kg", rest: "90" }, { id: 60, name: "نشر جانب دمبل", category: "سرشانه", sets: "4", reps: "15", weight: "12kg", rest: "60" }, { id: 61, name: "نشر خم دمبل (پشت سرشانه)", category: "سرشانه", sets: "4", reps: "15", weight: "10kg", rest: "60" }, { id: 62, name: "شراگ دمبل", category: "سرشانه", sets: "4", reps: "15", weight: "30kg", rest: "60" } ],
+                    "سه_شنبه": [ { id: 63, name: "جلو بازو هالتر", category: "جلو بازو", sets: "4", reps: "10", weight: "30kg", rest: "75" }, { id: 64, name: "جلو بازو دمبل روی میز شیبدار", category: "جلو بازو", sets: "4", reps: "12", weight: "14kg", rest: "60" }, { id: 65, name: "پشت بازو هالتر خوابیده", category: "پشت بازو", sets: "4", reps: "10", weight: "35kg", rest: "75" }, { id: 66, name: "پشت بازو سیمکش طناب", category: "پشت بازو", sets: "4", reps: "15", weight: "25kg", rest: "60" } ],
+                    "چهارشنبه": [ { id: 67, name: "اسکات هالتر", category: "پا", sets: "4", reps: "8", weight: "95kg", rest: "120" }, { id: 68, name: "پرس پا دستگاه", category: "پا", sets: "4", reps: "12", weight: "160kg", rest: "90" }, { id: 69, name: "جلو پا ماشین", category: "پا", sets: "4", reps: "15", weight: "50kg", rest: "60" }, { id: 70, name: "پشت پا ماشین خوابیده", category: "پا", sets: "4", reps: "12", weight: "45kg", rest: "60" } ],
+                    "پنجشنبه": [],
+                    "جمعه": []
+                };
+            }
+            
+            saveToDatabase();
+            renderWorkoutHub();
+            alert("برنامه الیت با موفقیت بارگذاری و جایگزین شد!");
+        }
+
+        function renderWorkoutHub() {
+            const days = ["شنبه", "یکشنبه", "دوشنبه", "سه_شنبه", "چهارشنبه", "پنجشنبه", "جمعه"];
+            const daysDisplay = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه"];
+            const selectorEl = document.getElementById("fit-days-selector");
+            if(!selectorEl) return;
+            
+            selectorEl.innerHTML = "";
+            let totalExc = 0; let activeDaysCount = 0; let totalSets = 0;
+            let catCounts = {};
+
+            days.forEach((day, idx) => {
+                const list = appState.workoutProgram[day] || [];
+                const count = list.length;
+                if(count > 0) activeDaysCount++;
+                totalExc += count;
+
+                list.forEach(ex => {
+                    totalSets += (parseInt(ex.sets) || 0);
+                    catCounts[ex.category] = (catCounts[ex.category] || 0) + 1;
+                });
+
+                const pill = document.createElement("div");
+                pill.className = `fit-day-pill ${day === activeWorkoutDay ? 'active' : ''}`;
+                pill.onclick = () => selectWorkoutDay(day);
+                pill.innerHTML = `
+                    <span class="fit-day-name">${daysDisplay[idx]}</span>
+                    <span class="fit-day-count">${count} حرکت</span>
+                `;
+                selectorEl.appendChild(pill);
+            });
+
+            document.getElementById("fit-stat-total").innerText = totalExc;
+            document.getElementById("fit-stat-days").innerText = `${activeDaysCount} / 7`;
+            document.getElementById("fit-stat-sets").innerText = totalSets;
+
+            let topMuscle = "-"; let maxC = -1;
+            for(let c in catCounts) { if(catCounts[c] > maxC) { maxC = catCounts[c]; topMuscle = c; } }
+            document.getElementById("fit-stat-muscle").innerText = topMuscle;
+
+            const activeIdx = days.indexOf(activeWorkoutDay);
+            document.getElementById("active-day-title").innerText = daysDisplay[activeIdx !== -1 ? activeIdx : 0];
+            
+            const currentList = appState.workoutProgram[activeWorkoutDay] || [];
+            document.getElementById("active-day-badge").innerText = `${currentList.length} حرکت فعال`;
+
+            const excContainer = document.getElementById("fit-exc-container");
+            excContainer.innerHTML = "";
+
+            if(currentList.length === 0) {
+                excContainer.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 50px 20px; color: var(--text-muted); font-size: 13.5px; background: rgba(255,255,255,0.01); border-radius: 18px; border: 1px dashed var(--glass-border);">هیچ حرکت تمرینی برای این روز ثبت نشده است. از فرم سمت چپ حرکت جدید اضافه کنید یا از برنامه‌های آماده الیت استفاده نمایید.</div>`;
+                return;
+            }
+
+            const catIcons = { "سینه": "💪", "زیربغل و پشت": "🦾", "سرشانه": "🏋️", "جلو بازو": "💥", "پشت بازو": "🔥", "پا": "🦵", "شکم و فیله": "⚡", "هوازی": "🏃" };
+
+            currentList.forEach(ex => {
+                const item = document.createElement("div");
+                item.className = "fit-exc-item";
+                item.innerHTML = `
+                    <div class="fit-exc-top">
+                        <div class="fit-exc-icon-wrap">${catIcons[ex.category] || '🏋️'}</div>
+                        <div class="fit-exc-name-wrap">
+                            <div class="fit-exc-name">${ex.name}</div>
+                            <span class="fit-exc-cat">${ex.category}</span>
+                        </div>
+                        <button class="btn-fit-del" onclick="deleteWorkoutExercise('${activeWorkoutDay}', ${ex.id})"><svg class="ico" style="width:18px;height:18px;"><use href="#i-trash"/></svg></button>
+                    </div>
+
+                    <div class="fit-exc-stats">
+                        <div class="fit-stat-box"><span class="fit-stat-val">${ex.sets}</span><span class="fit-stat-lbl">ست (Sets)</span></div>
+                        <div class="fit-stat-box"><span class="fit-stat-val">${ex.reps}</span><span class="fit-stat-lbl">تکرار (Reps)</span></div>
+                        <div class="fit-stat-box"><span class="fit-stat-val">${ex.weight}</span><span class="fit-stat-lbl">وزنه (Weight)</span></div>
+                    </div>
+
+                    <div style="font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between; padding: 0 4px;">
+                        <span><svg class="ico" style="width:12px;height:12px;"><use href="#i-clock"/></svg> استراحت: ${ex.rest || 60} ثانیه</span>
+                        <span style="color:#34d399;">● آماده تمرین</span>
+                    </div>
+
+                    <div class="fit-exc-actions">
+                        <button class="btn-fit-log" onclick="logWorkoutExerciseAsTask('${activeWorkoutDay}', ${ex.id})">
+                            <svg class="ico"><use href="#i-check"/></svg><span>افزودن به تسک‌های امروز</span>
+                        </button>
+                    </div>
+                `;
+                excContainer.appendChild(item);
+            });
+        }
+
+        function exportWorkoutData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState.workoutProgram, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `STRATOS_Workout_Routine.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importWorkoutData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported && (imported["شنبه"] || imported["دوشنبه"] || imported["جمعه"])) {
+                        appState.workoutProgram = imported;
+                        saveToDatabase();
+                        alert("برنامه ورزشی با موفقیت وارد سیستم شد!");
+                        renderWorkoutHub();
+                    } else { alert("فرمت فایل برنامه ورزشی معتبر نیست."); }
+                } catch(err) { alert("خطا در پردازش فایل برنامه ورزشی."); }
+            };
+            reader.readAsText(file);
+        }
 
         function createStrategicGoal() {
             const title = document.getElementById('new-goal-title').value.trim();
@@ -1667,6 +2215,9 @@
                 let isToday = (dateStr === new Date().toDateString());
                 let log = appState.dailyLogs && appState.dailyLogs[dateStr];
                 
+                // بررسی روز تعطیل (آفلاین)
+                let holidayName = getIranianHoliday(dateObj);
+                
                 let rateClass = "";
                 if(log && log.totalTasks > 0) {
                     let r = (log.tasksDone / log.totalTasks) * 100;
@@ -1676,23 +2227,34 @@
                 }
 
                 let dayEl = document.createElement('div');
-                dayEl.className = `cal-day ${isToday ? 'active-day' : ''} ${rateClass}`;
+                dayEl.className = `cal-day ${isToday ? 'active-day' : ''} ${rateClass} ${holidayName ? 'holiday-day' : ''}`;
                 dayEl.innerHTML = `<span>${d}</span><div class="cal-day-indicator"></div>`;
-                dayEl.onclick = () => selectCalendarDay(dateStr, d, dayEl);
+                dayEl.onclick = () => selectCalendarDay(dateStr, d, dayEl, holidayName);
                 container.appendChild(dayEl);
             }
-            selectCalendarDay(new Date().toDateString(), now.getDate(), null);
+            selectCalendarDay(new Date().toDateString(), now.getDate(), null, getIranianHoliday(now));
         }
 
-        function selectCalendarDay(dateStr, dayNum, el) {
+        function selectCalendarDay(dateStr, dayNum, el, holidayName) {
             selectedCalDateStr = dateStr;
             if(el) {
-                document.querySelectorAll('.cal-day').forEach(d => d.style.borderColor = "var(--glass-border)");
+                document.querySelectorAll('.cal-day').forEach(d => {
+                    if(!d.classList.contains('holiday-day')) d.style.borderColor = "var(--glass-border)";
+                });
                 el.style.borderColor = "#38bdf8";
             }
             let locale = appState.calLang === "fa" ? 'fa-IR' : 'en-US';
             let formattedDate = new Date(dateStr).toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             document.getElementById('selected-day-title').innerText = `گزارش: ${formattedDate}`;
+
+            // نمایش وضعیت تعطیلی
+            const holLine = document.getElementById('holiday-info-line');
+            if(holidayName) {
+                holLine.style.display = 'flex';
+                document.getElementById('rep-holiday-title').innerText = holidayName;
+            } else {
+                holLine.style.display = 'none';
+            }
 
             let log = (appState.dailyLogs && appState.dailyLogs[dateStr]) ? appState.dailyLogs[dateStr] : 
                 (dateStr === new Date().toDateString() ? {
@@ -1825,24 +2387,43 @@
             };
             img.src = url;
         }
-
         function renderAnalytics() {
             const days = ["شنبه", "۱شنبه", "۲شنبه", "۳شنبه", "۴شنبه", "۵شنبه", "جمعه"];
-            const ids = ["bar-sat", "bar-sun", "bar-mon", "bar-tue", "bar-wed", "bar-thu", "bar-fri"];
+            const barIds = ["bar-sat", "bar-sun", "bar-mon", "bar-tue", "bar-wed", "bar-thu", "bar-fri"];
+            const valIds = ["val-sat", "val-sun", "val-mon", "val-tue", "val-wed", "val-thu", "val-fri"];
+            
+            let totalWeeklyPct = 0; let countDays = 0;
             days.forEach((day, i) => {
                 const val = histData.days[day] || 0;
-                const el = document.getElementById(ids[i]);
-                if(el) {
-                    el.style.height = val + '%';
-                    el.style.background = val > 75 ? 'var(--glow-emerald)' : (val > 30 ? 'var(--glow-indigo)' : (val > 0 ? 'var(--glow-rose)' : 'rgba(255,255,255,0.05)'));
+                if(val > 0) { totalWeeklyPct += val; countDays++; }
+                const barEl = document.getElementById(barIds[i]);
+                const valEl = document.getElementById(valIds[i]);
+                if(barEl && valEl) {
+                    barEl.style.height = val + '%';
+                    valEl.innerText = val + '%';
+                    barEl.style.background = val > 75 ? 'var(--glow-emerald)' : (val > 30 ? 'var(--glow-indigo)' : (val > 0 ? 'var(--glow-rose)' : 'rgba(255,255,255,0.05)'));
                 }
             });
 
+            let overall = countDays > 0 ? Math.round(totalWeeklyPct / countDays) : 0;
+            document.getElementById("stat-overall-rate").innerText = overall + "%";
+
             if(!histData.priorityStats) histData.priorityStats = { highDone: 0, highTotal: 0, medDone: 0, medTotal: 0, lowDone: 0, lowTotal: 0 };
             const p = histData.priorityStats;
-            document.getElementById('progress-high').style.width = p.highTotal > 0 ? Math.round((p.highDone / p.highTotal) * 100) + '%' : '0%';
-            document.getElementById('progress-medium').style.width = p.medTotal > 0 ? Math.round((p.medDone / p.medTotal) * 100) + '%' : '0%';
-            document.getElementById('progress-low').style.width = p.lowTotal > 0 ? Math.round((p.lowDone / p.lowTotal) * 100) + '%' : '0%';
+            let totalP = p.highTotal + p.medTotal + p.lowTotal;
+            document.getElementById("donut-total-val").innerText = totalP;
+            
+            if(totalP > 0) {
+                let hPct = Math.round((p.highTotal / totalP) * 100);
+                let mPct = Math.round((p.medTotal / totalP) * 100);
+                let lPct = 100 - (hPct + mPct);
+                
+                document.getElementById("legend-high").innerText = hPct + "%";
+                document.getElementById("legend-med").innerText = mPct + "%";
+                document.getElementById("legend-low").innerText = lPct + "%";
+                
+                document.getElementById("priority-donut").style.background = `conic-gradient(#f43f5e 0% ${hPct}%, #fbbf24 ${hPct}% ${hPct + mPct}%, #34d399 ${hPct + mPct}% 100%)`;
+            }
 
             let habits = Object.values(appState.habits);
             let habitDone = habits.filter(h => h.current >= h.target).length;
@@ -1857,21 +2438,58 @@
             document.getElementById("stat-focus-score").innerText = focusScore;
 
             document.getElementById("stat-total-completed").innerText = histData.totalCompleted;
-            document.getElementById("stat-total-failed").innerText = histData.totalFailed;
+            
+            const hmContainer = document.getElementById("analytics-heatmap");
+            hmContainer.innerHTML = "";
+            let today = new Date();
+            for(let i = 29; i >= 0; i--) {
+                let d = new Date(today);
+                d.setDate(d.getDate() - i);
+                let dateStr = d.toDateString();
+                let log = appState.dailyLogs && appState.dailyLogs[dateStr];
+                
+                let level = 0;
+                if(log && log.totalTasks > 0) {
+                    let r = log.tasksDone / log.totalTasks;
+                    if(r >= 0.8) level = 4;
+                    else if(r >= 0.5) level = 3;
+                    else if(r >= 0.2) level = 2;
+                    else level = 1;
+                }
+                
+                let cell = document.createElement("div");
+                cell.className = "hm-cell";
+                cell.setAttribute("data-level", level);
+                cell.title = `${d.toLocaleDateString(appState.calLang === "fa" ? 'fa-IR' : 'en-US')} : ${log ? log.tasksDone + '/' + log.totalTasks : 'بدون فعالیت'}`;
+                hmContainer.appendChild(cell);
+            }
 
-            let type = "نیاز به دیتای بیشتر جهت تحلیل";
+            let aiText = "بر اساس داده‌های فعلی، در حال تثبیت عادات هستید. وظایف کلیدی را در زمان طلایی خود انجام دهید.";
+            let type = "نیاز به دیتای بیشتر";
+            let burnout = "ایمن (Low Risk)";
+            
+            if(histData.totalFailed > histData.totalCompleted && histData.totalFailed > 10) {
+                burnout = "خطر بالا (High Risk)";
+                aiText = "هشدار سیستم: حجم تسک‌های سوخته بالاست. از تراکم برنامه کاسته و روی ریکاوری تمرکز کنید.";
+                document.getElementById("stat-burnout").className = "badge high";
+            } else {
+                document.getElementById("stat-burnout").className = "badge low";
+                if (habitRate > 80 && focusScore > 70) {
+                    aiText = "عملکرد شما در بالاترین سطح است! ریتم فعلی را حفظ کرده و برای ارتقا آماده باشید.";
+                }
+            }
+
             if(histData.completionHours && histData.completionHours.length > 0) {
                 let avgHour = histData.completionHours.reduce((a,b)=>a+b,0) / histData.completionHours.length;
-                if(avgHour >= 0 && avgHour < 2) type = "جغد نیمه‌شب (Midnight Owl)";
-                else if(avgHour >= 2 && avgHour < 5) type = "شب‌زنده‌دار بامداد (Late Night Grinder)";
-                else if(avgHour >= 5 && avgHour < 10) type = "سحرخیز استراتژیک (Early Bird)";
-                else if(avgHour >= 10 && avgHour < 12) type = "فعال صبحگاهی (Morning Performer)";
-                else if(avgHour >= 12 && avgHour < 14) type = "تمرکز نیمروزی (Noon Focus)";
-                else if(avgHour >= 14 && avgHour < 16) type = "انرژی بعدازظهر (Afternoon Drive)";
-                else if(avgHour >= 16 && avgHour < 20) type = "تلاش‌گر عصرگاهی (Evening Worker)";
-                else type = "شب‌زنده‌دار متمرکز (Night Owl)";
+                if(avgHour >= 0 && avgHour < 6) type = "شب‌زنده‌دار (Night Owl)";
+                else if(avgHour >= 6 && avgHour < 12) type = "سحرخیز (Early Bird)";
+                else if(avgHour >= 12 && avgHour < 17) type = "فعال نیمروزی (Midday Performer)";
+                else type = "جنگجوی عصرگاهی (Evening Grinder)";
             }
+            
             document.getElementById("stat-personality").innerText = type;
+            document.getElementById("stat-burnout").innerText = burnout;
+            document.getElementById("stat-ai-recommendation").innerText = aiText;
         }
 
         function factoryResetDatabase() {
