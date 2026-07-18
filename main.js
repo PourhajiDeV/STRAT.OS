@@ -22,10 +22,12 @@ let appState = JSON.parse(localStorage.getItem(storageKey)) || {
     tasks: [], habits: {}, goals: [], workoutProgram: {}, notes: "", 
     isDayEnded: false, lastDateStr: new Date().toDateString(),
     calLang: "fa", timezone: "Asia/Tehran", theme: "theme-cyberpunk", profileTheme: "pt-cyber",
+    uiMode: "full",
     userName: "فرمانده استراتژیک", userRole: "STRAT.OS ELITE OPERATOR",
     userBio: "«تمرکز روی اهداف، کلید فتح آینده است...»", userAvatar: "shield",
     dailyLogs: {}, dbEngine: "local", mysqlEndpoint: "",
-    streak: 0, lastStreakDate: "", points: 0, dailyPointsToday: 0, lastPointsDate: "", weeklyBonusDate: ""
+    streak: 0, lastStreakDate: "", points: 0, dailyPointsToday: 0, lastPointsDate: "", weeklyBonusDate: "",
+    pomodoroCycles: 0, lastPomodoroDate: new Date().toDateString()
 };
 
 if(!appState.workoutProgram || !appState.workoutProgram["شنبه"]) {
@@ -42,9 +44,10 @@ let selectedCalDateStr = new Date().toDateString();
 let activeWorkoutDay = "شنبه";
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.body.className = appState.theme || 'theme-cyberpunk';
+    document.body.className = `${appState.theme || 'theme-cyberpunk'} mode-${appState.uiMode || 'full'}`;
     const cardEl = document.getElementById('export-card-dom');
     if(cardEl) cardEl.className = `profile-export-card ${appState.profileTheme || 'pt-cyber'}`;
+    
     updateThemeCardsUI();
     checkNewDay();
     
@@ -52,6 +55,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('config-calendar-type').value = appState.calLang;
     document.getElementById('config-timezone').value = appState.timezone;
     document.getElementById('db-engine-select').value = appState.dbEngine || "local";
+    
+    document.querySelectorAll('.ui-mode-card').forEach(c => c.classList.remove('active'));
+    let activeModeCard = document.querySelector(`.ui-mode-card[data-mode="${appState.uiMode || 'full'}"]`);
+    if(activeModeCard) activeModeCard.classList.add('active');
+
     changeDbEngine();
 
     if(appState.userName) {
@@ -80,7 +88,19 @@ document.addEventListener("DOMContentLoaded", () => {
     generateCalendarGrid();
     renderWorkoutHub();
     renderAnalytics();
+    renderProfileStats();
+    updatePomodoroCyclesUI();
 });
+
+function setUiMode(mode, element) {
+    document.body.classList.remove('mode-simple', 'mode-advanced', 'mode-full');
+    document.body.classList.add('mode-' + mode);
+    appState.uiMode = mode;
+    saveToDatabase();
+    
+    document.querySelectorAll('.ui-mode-card').forEach(c => c.classList.remove('active'));
+    if(element) element.classList.add('active');
+}
 
 function changeDbEngine() {
     const engine = document.getElementById('db-engine-select').value;
@@ -96,11 +116,11 @@ function changeDbEngine() {
     mysqlPanel.style.display = "none";
 
     if(engine === 'sqlite') {
-        sqlitePanel.style.display = "block";
+        sqlitePanel.style.display = "flex";
         activeText.innerText = "SQLite (Local File System)";
         descText.innerText = "ذخیره‌سازی مستقیم روی فایل انتخابی در سیستم شما.";
     } else if(engine === 'mysql') {
-        mysqlPanel.style.display = "block";
+        mysqlPanel.style.display = "flex";
         activeText.innerText = "MySQL / REST API Server";
         descText.innerText = "ارسال زنده کوئری‌ها و اطلاعات به سرور بک‌اند.";
     } else {
@@ -187,7 +207,7 @@ function importDatabase(event) {
 }
 
 function applyTheme(themeName, element) {
-    document.body.className = themeName;
+    document.body.className = `${themeName} mode-${appState.uiMode || 'full'}`;
     appState.theme = themeName;
     saveToDatabase();
     document.querySelectorAll('.panel .themes-grid:last-of-type .theme-card').forEach(c => c.classList.remove('active'));
@@ -230,6 +250,12 @@ function checkNewDay() {
         appState.dailyPointsToday = 0;
         appState.lastPointsDate = todayStr;
         saveToDatabase();
+    }
+    if(appState.lastPomodoroDate !== todayStr) {
+        appState.pomodoroCycles = 0;
+        appState.lastPomodoroDate = todayStr;
+        saveToDatabase();
+        updatePomodoroCyclesUI();
     }
 }
 
@@ -278,6 +304,7 @@ function switchAppView(viewId, element) {
     if(viewId === 'analytics') renderAnalytics();
     if(viewId === 'profile') renderProfileStats();
     if(viewId === 'calendar') generateCalendarGrid();
+    if(viewId === 'timers') updatePomodoroCyclesUI();
 }
 
 function toggleEndDay() {
@@ -335,18 +362,20 @@ function refreshUI() {
     });
 
     const habitContainer = document.getElementById('habits-list');
-    habitContainer.innerHTML = '';
-    for(let id in appState.habits) {
-        const h = appState.habits[id];
-        habitContainer.innerHTML += `
-            <div class="habit-card">
-                <div class="habit-details"><h4>${h.name}</h4><p>${h.current} از ${h.target} تیک</p></div>
-                <div class="habit-ctrls">
-                    <button class="action-btn del" onclick="deleteHabit('${id}')"><svg class="ico"><use href="#i-trash"/></svg></button>
-                    <button class="btn-inc" onclick="adjustHabit('${id}', -1)"><svg class="ico"><use href="#i-minus"/></svg></button>
-                    <button class="btn-inc" onclick="adjustHabit('${id}', 1)"><svg class="ico"><use href="#i-plus"/></svg></button>
-                </div>
-            </div>`;
+    if(habitContainer) {
+        habitContainer.innerHTML = '';
+        for(let id in appState.habits) {
+            const h = appState.habits[id];
+            habitContainer.innerHTML += `
+                <div class="habit-card">
+                    <div class="habit-details"><h4>${h.name}</h4><p>${h.current} از ${h.target} تیک</p></div>
+                    <div class="habit-ctrls">
+                        <button class="action-btn del" onclick="deleteHabit('${id}')"><svg class="ico"><use href="#i-trash"/></svg></button>
+                        <button class="btn-inc" onclick="adjustHabit('${id}', -1)"><svg class="ico"><use href="#i-minus"/></svg></button>
+                        <button class="btn-inc" onclick="adjustHabit('${id}', 1)"><svg class="ico"><use href="#i-plus"/></svg></button>
+                    </div>
+                </div>`;
+        }
     }
 
     document.getElementById('kpi-total').innerText = appState.tasks.length;
@@ -656,21 +685,28 @@ function renderWorkoutHub() {
         selectorEl.appendChild(pill);
     });
 
-    document.getElementById("fit-stat-total").innerText = totalExc;
-    document.getElementById("fit-stat-days").innerText = `${activeDaysCount} / 7`;
-    document.getElementById("fit-stat-sets").innerText = totalSets;
+    const fitTotalEl = document.getElementById("fit-stat-total");
+    if(fitTotalEl) fitTotalEl.innerText = totalExc;
+    const fitDaysEl = document.getElementById("fit-stat-days");
+    if(fitDaysEl) fitDaysEl.innerText = `${activeDaysCount} / 7`;
+    const fitSetsEl = document.getElementById("fit-stat-sets");
+    if(fitSetsEl) fitSetsEl.innerText = totalSets;
 
     let topMuscle = "-"; let maxC = -1;
     for(let c in catCounts) { if(catCounts[c] > maxC) { maxC = catCounts[c]; topMuscle = c; } }
-    document.getElementById("fit-stat-muscle").innerText = topMuscle;
+    const fitMuscleEl = document.getElementById("fit-stat-muscle");
+    if(fitMuscleEl) fitMuscleEl.innerText = topMuscle;
 
     const activeIdx = days.indexOf(activeWorkoutDay);
-    document.getElementById("active-day-title").innerText = daysDisplay[activeIdx !== -1 ? activeIdx : 0];
+    const dayTitleEl = document.getElementById("active-day-title");
+    if(dayTitleEl) dayTitleEl.innerText = daysDisplay[activeIdx !== -1 ? activeIdx : 0];
     
     const currentList = appState.workoutProgram[activeWorkoutDay] || [];
-    document.getElementById("active-day-badge").innerText = `${currentList.length} حرکت فعال`;
+    const dayBadgeEl = document.getElementById("active-day-badge");
+    if(dayBadgeEl) dayBadgeEl.innerText = `${currentList.length} حرکت فعال`;
 
     const excContainer = document.getElementById("fit-exc-container");
+    if(!excContainer) return;
     excContainer.innerHTML = "";
 
     if(currentList.length === 0) {
@@ -904,7 +940,12 @@ function startCountdown() {
         if(cdSecondsRemaining <= 0) {
             pauseCountdown(); cdSecondsRemaining = 0; updateCountdownDisplay();
             document.getElementById('cd-status-text').innerText = "MISSION COMPLETED!";
-            triggerAlertNotification("زمان تمرکز به پایان رسید", "تایمر تنظیم شده در STRAT.OS تکمیل شد.");
+            appState.pomodoroCycles = (appState.pomodoroCycles || 0) + 1;
+            appState.points = (appState.points || 0) + 10;
+            saveToDatabase();
+            updatePomodoroCyclesUI();
+            refreshUI();
+            triggerAlertNotification("زمان تمرکز به پایان رسید", "سیکل تمرکز شما در STRAT.OS تکمیل شد! +10 امتیاز اضافه شد.");
         }
     }, 1000);
 }
@@ -930,10 +971,33 @@ function updateCountdownDisplay() {
     let fillEl = document.getElementById('cd-progress-fill');
     if(fillEl) fillEl.style.width = `${pct}%`;
 }
+function updatePomodoroCyclesUI() {
+    const dotsContainer = document.getElementById('pomodoro-cycles-dots');
+    const valText = document.getElementById('pomodoro-cycles-val');
+    if(!dotsContainer || !valText) return;
+    let cycles = appState.pomodoroCycles || 0;
+    valText.innerText = cycles;
+    dotsContainer.innerHTML = '';
+    for(let i=1; i<=4; i++) {
+        let span = document.createElement('span');
+        span.className = `cycle-dot ${i <= (cycles % 4 || (cycles > 0 ? 4 : 0)) ? 'completed' : ''}`;
+        dotsContainer.appendChild(span);
+    }
+}
 function triggerAlertNotification(title, bodyText) {
-    let ctx = new (window.AudioContext || window.webkitAudioContext)();
-    let osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.setValueAtTime(880, ctx.currentTime);
-    osc.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.5);
+    try {
+        let ctx = new (window.AudioContext || window.webkitAudioContext)();
+        let osc = ctx.createOscillator();
+        let gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+        osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.15);
+        osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.5, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.8);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 0.8);
+    } catch(e) {}
     if (Notification.permission === "granted") { new Notification(title, { body: bodyText }); }
     else { alert(title + "\n" + bodyText); }
 }
@@ -969,7 +1033,6 @@ function generateCalendarGrid() {
         let isToday = (dateStr === new Date().toDateString());
         let log = appState.dailyLogs && appState.dailyLogs[dateStr];
         
-        // بررسی روز تعطیل (آفلاین)
         let holidayName = getIranianHoliday(dateObj);
         
         let rateClass = "";
@@ -1001,7 +1064,6 @@ function selectCalendarDay(dateStr, dayNum, el, holidayName) {
     let formattedDate = new Date(dateStr).toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     document.getElementById('selected-day-title').innerText = `گزارش: ${formattedDate}`;
 
-    // نمایش وضعیت تعطیلی
     const holLine = document.getElementById('holiday-info-line');
     if(holidayName) {
         holLine.style.display = 'flex';
@@ -1072,7 +1134,7 @@ function renderProfileStats() {
 
     document.getElementById('prof-stat-focus').innerText = focusScore;
     document.getElementById('prof-stat-done').innerText = histData.totalCompleted;
-    document.getElementById('prof-stat-streak').innerText = `${habitRate}%`;
+    document.getElementById('prof-stat-streak').innerText = `🔥 ${appState.streak || 0} روز`;
 
     let xp = (histData.totalCompleted * 10) + ((appState.points || 0) * 2);
     let level = Math.floor(xp / 100) + 1;
@@ -1082,6 +1144,42 @@ function renderProfileStats() {
     document.getElementById('prof-xp-fill').style.width = `${currentLevelXp}%`;
     document.getElementById('prof-xp-current').innerText = `XP: ${xp}`;
     document.getElementById('prof-xp-next').innerText = `Next Level: ${level * 100} XP`;
+
+    const achievements = [
+        { id: 'first_step', title: 'اولین قدم', desc: 'تکمیل اولین تسک', icon: 'i-check', unlocked: histData.totalCompleted >= 1 },
+        { id: 'streak_3', title: 'آغاز استمرار', desc: '۳ روز استریک متوالی', icon: 'i-fire', unlocked: (appState.streak || 0) >= 3 },
+        { id: 'streak_7', title: 'قهرمان هفته', desc: '۷ روز استریک متوالی', icon: 'i-crown', unlocked: (appState.streak || 0) >= 7 },
+        { id: 'pomodoro_master', title: 'تمرکز عمیق', desc: 'انجام ۵ سیکل پومودورو', icon: 'i-stopwatch', unlocked: (appState.pomodoroCycles || 0) >= 5 },
+        { id: 'elite_level', title: 'فرمانده الیت', desc: 'رسیدن به سطح ۵', icon: 'i-shield', unlocked: level >= 5 },
+        { id: 'task_machine', title: 'ماشین بهره‌وری', desc: 'تکمیل ۵۰ تسک استراتژیک', icon: 'i-bullseye', unlocked: histData.totalCompleted >= 50 }
+    ];
+
+    const badgesContainer = document.getElementById('profile-badges-container');
+    if(badgesContainer) {
+        badgesContainer.innerHTML = '';
+        achievements.forEach(b => {
+            badgesContainer.innerHTML += `
+                <div class="badge-item ${b.unlocked ? 'unlocked' : 'locked'}" title="${b.desc}">
+                    <div class="badge-icon-wrap"><svg class="ico"><use href="#${b.icon}"/></svg></div>
+                    <div class="badge-info">
+                        <strong>${b.title}</strong>
+                        <span>${b.unlocked ? '✔ باز شده' : '🔒 قفل'}</span>
+                    </div>
+                </div>`;
+        });
+    }
+
+    const profCardAchContainer = document.getElementById('prof-card-achievements-list');
+    if(profCardAchContainer) {
+        let activeBadgesHtml = '';
+        achievements.forEach(b => {
+            if(b.unlocked) {
+                activeBadgesHtml += `<div class="pca-badge"><svg class="ico"><use href="#${b.icon}"/></svg>${b.title}</div>`;
+            }
+        });
+        if(!activeBadgesHtml) activeBadgesHtml = `<span style="font-size:11px; color:var(--text-muted);">هیچ نشان افتخاری کسب نشده است.</span>`;
+        profCardAchContainer.innerHTML = activeBadgesHtml;
+    }
 }
 
 function exportProfileAsImage() {
@@ -1141,6 +1239,7 @@ function fallbackExport(cardEl) {
     };
     img.src = url;
 }
+
 function renderAnalytics() {
     const days = ["شنبه", "۱شنبه", "۲شنبه", "۳شنبه", "۴شنبه", "۵شنبه", "جمعه"];
     const barIds = ["bar-sat", "bar-sun", "bar-mon", "bar-tue", "bar-wed", "bar-thu", "bar-fri"];
@@ -1160,74 +1259,87 @@ function renderAnalytics() {
     });
 
     let overall = countDays > 0 ? Math.round(totalWeeklyPct / countDays) : 0;
-    document.getElementById("stat-overall-rate").innerText = overall + "%";
+    const overallEl = document.getElementById("stat-overall-rate");
+    if(overallEl) overallEl.innerText = overall + "%";
 
     if(!histData.priorityStats) histData.priorityStats = { highDone: 0, highTotal: 0, medDone: 0, medTotal: 0, lowDone: 0, lowTotal: 0 };
     const p = histData.priorityStats;
     let totalP = p.highTotal + p.medTotal + p.lowTotal;
-    document.getElementById("donut-total-val").innerText = totalP;
+    
+    const donutValEl = document.getElementById("donut-total-val");
+    if(donutValEl) donutValEl.innerText = totalP;
     
     if(totalP > 0) {
         let hPct = Math.round((p.highTotal / totalP) * 100);
         let mPct = Math.round((p.medTotal / totalP) * 100);
         let lPct = 100 - (hPct + mPct);
         
-        document.getElementById("legend-high").innerText = hPct + "%";
-        document.getElementById("legend-med").innerText = mPct + "%";
-        document.getElementById("legend-low").innerText = lPct + "%";
+        const legHEl = document.getElementById("legend-high");
+        if(legHEl) legHEl.innerText = hPct + "%";
+        const legMEl = document.getElementById("legend-med");
+        if(legMEl) legMEl.innerText = mPct + "%";
+        const legLEl = document.getElementById("legend-low");
+        if(legLEl) legLEl.innerText = lPct + "%";
         
-        document.getElementById("priority-donut").style.background = `conic-gradient(#f43f5e 0% ${hPct}%, #fbbf24 ${hPct}% ${hPct + mPct}%, #34d399 ${hPct + mPct}% 100%)`;
+        const donutChartEl = document.getElementById("priority-donut");
+        if(donutChartEl) donutChartEl.style.background = `conic-gradient(#f43f5e 0% ${hPct}%, #fbbf24 ${hPct}% ${hPct + mPct}%, #34d399 ${hPct + mPct}% 100%)`;
     }
 
     let habits = Object.values(appState.habits);
     let habitDone = habits.filter(h => h.current >= h.target).length;
     let habitRate = habits.length > 0 ? Math.round((habitDone / habits.length) * 100) : 0;
-    document.getElementById("stat-habit-streak").innerText = habitRate + '%';
+    const statHabitStreak = document.getElementById("stat-habit-streak");
+    if(statHabitStreak) statHabitStreak.innerText = habitRate + '%';
 
     let tasks = appState.tasks;
     let taskDoneCount = tasks.filter(t => t.done).length;
     let taskRate = tasks.length > 0 ? (taskDoneCount / tasks.length) * 60 : 0;
     let habitPoints = habits.length > 0 ? (habitDone / habits.length) * 40 : 0;
     let focusScore = Math.round(taskRate + habitPoints);
-    document.getElementById("stat-focus-score").innerText = focusScore;
+    const statFocusScore = document.getElementById("stat-focus-score");
+    if(statFocusScore) statFocusScore.innerText = focusScore;
 
-    document.getElementById("stat-total-completed").innerText = histData.totalCompleted;
+    const statTotalCompleted = document.getElementById("stat-total-completed");
+    if(statTotalCompleted) statTotalCompleted.innerText = histData.totalCompleted;
     
     const hmContainer = document.getElementById("analytics-heatmap");
-    hmContainer.innerHTML = "";
-    let today = new Date();
-    for(let i = 29; i >= 0; i--) {
-        let d = new Date(today);
-        d.setDate(d.getDate() - i);
-        let dateStr = d.toDateString();
-        let log = appState.dailyLogs && appState.dailyLogs[dateStr];
-        
-        let level = 0;
-        if(log && log.totalTasks > 0) {
-            let r = log.tasksDone / log.totalTasks;
-            if(r >= 0.8) level = 4;
-            else if(r >= 0.5) level = 3;
-            else if(r >= 0.2) level = 2;
-            else level = 1;
+    if(hmContainer) {
+        hmContainer.innerHTML = "";
+        let today = new Date();
+        for(let i = 29; i >= 0; i--) {
+            let d = new Date(today);
+            d.setDate(d.getDate() - i);
+            let dateStr = d.toDateString();
+            let log = appState.dailyLogs && appState.dailyLogs[dateStr];
+            
+            let level = 0;
+            if(log && log.totalTasks > 0) {
+                let r = log.tasksDone / log.totalTasks;
+                if(r >= 0.8) level = 4;
+                else if(r >= 0.5) level = 3;
+                else if(r >= 0.2) level = 2;
+                else level = 1;
+            }
+            
+            let cell = document.createElement("div");
+            cell.className = "hm-cell";
+            cell.setAttribute("data-level", level);
+            cell.title = `${d.toLocaleDateString(appState.calLang === "fa" ? 'fa-IR' : 'en-US')} : ${log ? log.tasksDone + '/' + log.totalTasks : 'بدون فعالیت'}`;
+            hmContainer.appendChild(cell);
         }
-        
-        let cell = document.createElement("div");
-        cell.className = "hm-cell";
-        cell.setAttribute("data-level", level);
-        cell.title = `${d.toLocaleDateString(appState.calLang === "fa" ? 'fa-IR' : 'en-US')} : ${log ? log.tasksDone + '/' + log.totalTasks : 'بدون فعالیت'}`;
-        hmContainer.appendChild(cell);
     }
 
     let aiText = "بر اساس داده‌های فعلی، در حال تثبیت عادات هستید. وظایف کلیدی را در زمان طلایی خود انجام دهید.";
     let type = "نیاز به دیتای بیشتر";
     let burnout = "ایمن (Low Risk)";
     
+    const statBurnout = document.getElementById("stat-burnout");
     if(histData.totalFailed > histData.totalCompleted && histData.totalFailed > 10) {
         burnout = "خطر بالا (High Risk)";
         aiText = "هشدار سیستم: حجم تسک‌های سوخته بالاست. از تراکم برنامه کاسته و روی ریکاوری تمرکز کنید.";
-        document.getElementById("stat-burnout").className = "badge high";
+        if(statBurnout) statBurnout.className = "badge high";
     } else {
-        document.getElementById("stat-burnout").className = "badge low";
+        if(statBurnout) statBurnout.className = "badge low";
         if (habitRate > 80 && focusScore > 70) {
             aiText = "عملکرد شما در بالاترین سطح است! ریتم فعلی را حفظ کرده و برای ارتقا آماده باشید.";
         }
@@ -1241,9 +1353,12 @@ function renderAnalytics() {
         else type = "جنگجوی عصرگاهی (Evening Grinder)";
     }
     
-    document.getElementById("stat-personality").innerText = type;
-    document.getElementById("stat-burnout").innerText = burnout;
-    document.getElementById("stat-ai-recommendation").innerText = aiText;
+    const statPersonality = document.getElementById("stat-personality");
+    if(statPersonality) statPersonality.innerText = type;
+    if(statBurnout) statBurnout.innerText = burnout;
+    
+    const statAiRec = document.getElementById("stat-ai-recommendation");
+    if(statAiRec) statAiRec.innerText = aiText;
 }
 
 function factoryResetDatabase() {

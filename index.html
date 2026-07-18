@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="theme-cyberpunk">
+<body class="theme-cyberpunk mode-full">
     <svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
         <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
         <symbol id="i-chart-pie" viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></symbol>
@@ -71,7 +71,7 @@
                 <div class="nav-item active" onclick="switchAppView('dashboard', this)">
                     <svg class="ico"><use href="#i-chart-pie"/></svg><span>داشبورد استراتژیک</span>
                 </div>
-                <div class="nav-item" onclick="switchAppView('workout', this)">
+                <div class="nav-item hide-in-simple" onclick="switchAppView('workout', this)">
                     <svg class="ico"><use href="#i-dumbbell"/></svg><span>برنامه ورزشی حرفه‌ای</span>
                 </div>
                 <div class="nav-item" onclick="switchAppView('goals', this)">
@@ -80,13 +80,13 @@
                 <div class="nav-item" onclick="switchAppView('timers', this)">
                     <svg class="ico"><use href="#i-stopwatch"/></svg><span>زمان‌سنج و تمرکز</span>
                 </div>
-                <div class="nav-item" onclick="switchAppView('calendar', this)">
+                <div class="nav-item hide-in-simple" onclick="switchAppView('calendar', this)">
                     <svg class="ico"><use href="#i-calendar"/></svg><span>تقویم و گزارش‌ها</span>
                 </div>
                 <div class="nav-item" onclick="switchAppView('profile', this)">
                     <svg class="ico"><use href="#i-id-card"/></svg><span>پروفایل و تم‌ها</span>
                 </div>
-                <div class="nav-item" onclick="switchAppView('analytics', this)">
+                <div class="nav-item hide-in-simple hide-in-advanced" onclick="switchAppView('analytics', this)">
                     <svg class="ico"><use href="#i-chart-line"/></svg><span>آنالیز عملکرد</span>
                 </div>
                 <div class="nav-item" onclick="switchAppView('about', this)">
@@ -166,7 +166,7 @@
                                 <option value="medium" selected>اولویت متوسط (Med)</option>
                                 <option value="low">اولویت کم (Low)</option>
                             </select>
-                            <div class="time-input-group">
+                            <div class="time-input-group hide-in-simple">
                                 <span>از</span> <input type="time" id="task-start"> <span>تا</span> <input type="time" id="task-end">
                             </div>
                             <button class="btn-primary" onclick="addNewTask()">
@@ -176,14 +176,16 @@
                     </div>
 
                     <div class="panel">
-                        <div class="panel-title">
-                            <span><svg class="ico"><use href="#i-fire"/></svg> مانیتور پویای عادات</span>
-                        </div>
-                        <div id="habits-list" class="habits-container"></div>
-                        <div class="action-form" style="margin-top: 15px;">
-                            <input type="text" id="habit-name-input" placeholder="عادت جدید...">
-                            <input type="number" id="habit-target-input" value="5" style="width: 70px; text-align: center;">
-                            <button class="btn-primary" onclick="createNewHabit()"><svg class="ico"><use href="#i-plus"/></svg></button>
+                        <div class="hide-in-simple">
+                            <div class="panel-title">
+                                <span><svg class="ico"><use href="#i-fire"/></svg> مانیتور پویای عادات</span>
+                            </div>
+                            <div id="habits-list" class="habits-container"></div>
+                            <div class="action-form" style="margin-top: 15px;">
+                                <input type="text" id="habit-name-input" placeholder="عادت جدید...">
+                                <input type="number" id="habit-target-input" value="5" style="width: 70px; text-align: center;">
+                                <button class="btn-primary" onclick="createNewHabit()"><svg class="ico"><use href="#i-plus"/></svg></button>
+                            </div>
                         </div>
                         <div class="panel-title" style="margin-top: 25px; margin-bottom: 12px;">
                             <span><svg class="ico"><use href="#i-pen"/></svg> یادداشت سریع امروز</span>
@@ -205,19 +207,19 @@
                         <div class="kpi-label" style="color: #34d399;"><svg class="ico"><use href="#i-check"/></svg> روزهای فعال تمرینی</div>
                         <div class="kpi-val" id="fit-stat-days" style="color: #34d399;">0 / 7</div>
                     </div>
-                    <div class="kpi-card" style="border-color: rgba(251, 191, 36, 0.3);">
+                    <div class="kpi-card hide-in-advanced" style="border-color: rgba(251, 191, 36, 0.3);">
                         <svg class="ico bg-icon" style="color: #fbbf24;"><use href="#i-fire"/></svg>
                         <div class="kpi-label" style="color: #fbbf24;"><svg class="ico"><use href="#i-fire"/></svg> مجموع ست‌های هفته</div>
                         <div class="kpi-val" id="fit-stat-sets" style="color: #fbbf24;">0</div>
                     </div>
-                    <div class="kpi-card" style="border-color: rgba(244, 63, 94, 0.3);">
+                    <div class="kpi-card hide-in-advanced" style="border-color: rgba(244, 63, 94, 0.3);">
                         <svg class="ico bg-icon" style="color: #f43f5e;"><use href="#i-bolt"/></svg>
                         <div class="kpi-label" style="color: #f43f5e;"><svg class="ico"><use href="#i-bolt"/></svg> عضله اصلی (پرتکرار)</div>
                         <div class="kpi-val" id="fit-stat-muscle" style="color: #fff; font-size: 22px; margin-top: 18px;">-</div>
                     </div>
                 </div>
 
-                <div class="fit-hub-header">
+                <div class="fit-hub-header hide-in-advanced">
                     <div style="display:flex; align-items:center; gap:10px;">
                         <input type="file" id="workout-import-file" style="display:none;" accept=".json" onchange="importWorkoutData(event)">
                         <button class="btn-secondary" style="border-color: #22d3ee; color: #22d3ee;" onclick="document.getElementById('workout-import-file').click()"><svg class="ico"><use href="#i-upload"/></svg><span>ایمپورت فایل برنامه</span></button>
@@ -287,7 +289,7 @@
                             </button>
                         </div>
 
-                        <div class="fit-template-box">
+                        <div class="fit-template-box hide-in-advanced">
                             <div class="fit-template-title"><svg class="ico"><use href="#i-bolt"/></svg> بارگذاری سریع برنامه‌های فوق‌حرفه‌ای (الیت):</div>
                             <div class="fit-template-pills">
                                 <button class="btn-template" onclick="loadEliteRoutine('ppl')">🔥 برنامه PPL (پوش - پول - لگ)</button>
@@ -296,7 +298,7 @@
                             </div>
                         </div>
 
-                        <div class="fit-calc-box">
+                        <div class="fit-calc-box hide-in-advanced">
                             <div class="fit-calc-title"><svg class="ico"><use href="#i-brain"/></svg> محاسبه‌گر سریع یک تکرار بیشینه (1RM Calculator):</div>
                             <div class="fit-input-row" style="align-items: flex-end;">
                                 <div class="fit-input-wrap"><label>وزنه (Kg):</label><input type="number" id="calc-weight" placeholder="80" style="text-align:center; padding: 8px;"></div>
@@ -327,8 +329,45 @@
 
             <section id="view-timers" class="app-view">
                 <div class="timer-grid">
-                    <div class="panel">
-                        <div class="panel-title"><span><svg class="ico"><use href="#i-stopwatch"/></svg> کرنومتر دقیق سایبرنتیک</span></div>
+                    <div class="panel timer-panel-elite">
+                        <div class="panel-title">
+                            <span><svg class="ico" style="color:#fb7185;"><use href="#i-clock"/></svg> مرکز فرماندهی تمرکز (Focus HUD)</span>
+                            <span class="badge high">SMART POMODORO</span>
+                        </div>
+                        <div class="pomodoro-cycles-box hide-in-simple">
+                            <span>سیکل‌های تمرکز امروز:</span>
+                            <div class="cycles-dots" id="pomodoro-cycles-dots">
+                                <span class="cycle-dot"></span><span class="cycle-dot"></span><span class="cycle-dot"></span><span class="cycle-dot"></span>
+                            </div>
+                            <strong id="pomodoro-cycles-val" style="color:#fb7185;">0</strong>
+                        </div>
+                        <div class="preset-pills">
+                            <div class="preset-pill" onclick="setTimerPreset(15, this)">⚡ ۱۵ دقیقه <small>(سریع)</small></div>
+                            <div class="preset-pill active" onclick="setTimerPreset(25, this)">🔥 ۲۵ دقیقه <small>(پومودورو)</small></div>
+                            <div class="preset-pill" onclick="setTimerPreset(45, this)">🚀 ۴۵ دقیقه <small>(عمیق)</small></div>
+                            <div class="preset-pill" onclick="setTimerPreset(60, this)">🧠 ۶۰ دقیقه <small>(سنگین)</small></div>
+                        </div>
+                        <div class="timer-hud rose-hud" id="countdown-hud">
+                            <div class="hud-status-tag"><span class="pulse-dot"></span><span id="cd-status-text">READY FOR FOCUS</span></div>
+                            <div class="timer-display" id="countdown-display">25:00</div>
+                            <div class="hud-progress-bg"><div class="hud-progress-fill" id="cd-progress-fill"></div></div>
+                        </div>
+                        <div class="action-form" style="justify-content:center; gap:8px;">
+                            <span style="font-size:12px; color:var(--text-muted);"><svg class="ico"><use href="#i-sliders"/></svg> تنظیم دستی (دقیقه):</span>
+                            <input type="number" id="timer-mins-input" value="25" min="1" max="180" style="width:70px; text-align:center;" onchange="customTimerChange()">
+                        </div>
+                        <div class="timer-controls">
+                            <button class="btn-timer btn-start" onclick="startCountdown()"><svg class="ico"><use href="#i-play"/></svg> شروع تمرکز</button>
+                            <button class="btn-timer btn-pause" onclick="pauseCountdown()"><svg class="ico"><use href="#i-pause"/></svg> توقف</button>
+                            <button class="btn-timer btn-reset" onclick="resetCountdown()"><svg class="ico"><use href="#i-reset"/></svg> لغو</button>
+                        </div>
+                    </div>
+
+                    <div class="panel timer-panel-elite hide-in-simple">
+                        <div class="panel-title">
+                            <span><svg class="ico" style="color:#38bdf8;"><use href="#i-stopwatch"/></svg> کرنومتر سایبرنتیک (Stopwatch)</span>
+                            <span class="badge low">PRECISION LOG</span>
+                        </div>
                         <div class="timer-hud" id="stopwatch-hud">
                             <div class="hud-status-tag"><span class="pulse-dot"></span><span id="sw-status-text">SYSTEM STANDBY</span></div>
                             <div class="timer-display" id="stopwatch-display">00:00:00<span class="millis">.00</span></div>
@@ -336,35 +375,11 @@
                         <div class="timer-controls">
                             <button class="btn-timer btn-start" onclick="startStopwatch()"><svg class="ico"><use href="#i-play"/></svg> شروع</button>
                             <button class="btn-timer btn-pause" onclick="pauseStopwatch()"><svg class="ico"><use href="#i-pause"/></svg> توقف</button>
-                            <button class="btn-timer btn-reset" onclick="resetStopwatch()"><svg class="ico"><use href="#i-reset"/></svg> ریست</button>
                             <button class="btn-timer btn-lap" onclick="recordLap()"><svg class="ico"><use href="#i-flag"/></svg> ثبت دور</button>
+                            <button class="btn-timer btn-reset" onclick="resetStopwatch()"><svg class="ico"><use href="#i-reset"/></svg> ریست</button>
                         </div>
+                        <div class="laps-header"><span>شماره دور (Lap)</span><span>زمان ثبت‌شده</span></div>
                         <ul class="laps-list" id="laps-list"></ul>
-                    </div>
-
-                    <div class="panel">
-                        <div class="panel-title"><span><svg class="ico"><use href="#i-clock"/></svg> تایمر تمرکز هوشمند (Focus HUD)</span></div>
-                        <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 15px;">انتخاب سریع زمان تمرکز با هشدار صوتی و نوتیفیکیشن مرورگر:</p>
-                        <div class="preset-pills">
-                            <div class="preset-pill" onclick="setTimerPreset(15, this)">⚡ ۱۵ دقیقه (سریع)</div>
-                            <div class="preset-pill active" onclick="setTimerPreset(25, this)">🔥 ۲۵ دقیقه (پومودورو)</div>
-                            <div class="preset-pill" onclick="setTimerPreset(45, this)">🚀 ۴۵ دقیقه (عمیق)</div>
-                            <div class="preset-pill" onclick="setTimerPreset(60, this)">🧠 ۶۰ دقیقه (سنگین)</div>
-                        </div>
-                        <div class="timer-hud rose-hud" id="countdown-hud">
-                            <div class="hud-status-tag" style="color: #fb7185;"><span class="pulse-dot"></span><span id="cd-status-text">READY FOR FOCUS</span></div>
-                            <div class="timer-display" id="countdown-display">25:00</div>
-                            <div class="hud-progress-bg"><div class="hud-progress-fill" id="cd-progress-fill"></div></div>
-                        </div>
-                        <div class="action-form" style="margin-top:0; justify-content: center; gap: 8px; margin-bottom: 15px;">
-                            <span style="font-size:12.5px; color:var(--text-muted); display:flex; align-items:center;">تنظیم دستی (دقیقه):</span>
-                            <input type="number" id="timer-mins-input" placeholder="دقیقه" value="25" style="width: 75px; text-align: center; padding: 8px;" onchange="customTimerChange()">
-                        </div>
-                        <div class="timer-controls" style="margin-bottom: 0;">
-                            <button class="btn-timer btn-start" style="background: var(--glow-rose); box-shadow: 0 8px 20px rgba(244, 63, 94, 0.3);" onclick="startCountdown()"><svg class="ico"><use href="#i-play"/></svg> شروع تمرکز</button>
-                            <button class="btn-timer btn-pause" onclick="pauseCountdown()"><svg class="ico"><use href="#i-pause"/></svg> توقف</button>
-                            <button class="btn-timer btn-reset" onclick="resetCountdown()"><svg class="ico"><use href="#i-xmark"/></svg> لغو</button>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -437,13 +452,18 @@
                                     <div class="p-stat-label">کل موفقیت‌ها</div>
                                 </div>
                                 <div class="p-stat-box">
-                                    <div class="p-stat-val" id="prof-stat-streak">0%</div>
-                                    <div class="p-stat-label">پایداری عادات</div>
+                                    <div class="p-stat-val" id="prof-stat-streak" style="color:#fbbf24;">🔥 0 روز</div>
+                                    <div class="p-stat-label">استریک فعال</div>
                                 </div>
                             </div>
 
                             <div class="profile-xp-bar"><div class="profile-xp-fill" id="prof-xp-fill" style="width: 20%;"></div></div>
                             <div class="profile-xp-text"><span id="prof-xp-current">XP: 0</span><span id="prof-xp-next">Next Level: 50 XP</span></div>
+
+                            <div class="profile-card-achievements">
+                                <div class="pca-title"><svg class="ico"><use href="#i-crown"/></svg> نشان‌های افتخار فعال (Achievements):</div>
+                                <div class="pca-grid" id="prof-card-achievements-list"></div>
+                            </div>
 
                             <div class="profile-card-footer">
                                 <div><a href="https://pourhajidev.ir" target="_blank" style="color:inherit; text-decoration:none;" class="dev-link">Made By PourhajiDeV &lt;/&gt;</a></div>
@@ -455,12 +475,17 @@
                             <div style="display: flex; gap: 10px; width: 100%;">
                                 <input type="text" id="prof-name-input" placeholder="نام کاربری..." value="فرمانده استراتژیک" style="flex: 2;">
                                 <select id="prof-avatar-select" style="flex: 1;" onchange="updateProfileAvatar()">
-                                    <option value="shield">شیلد امنیتی</option>
-                                    <option value="astro">فضانورد</option>
-                                    <option value="ninja">نخبه استراتژیست</option>
-                                    <option value="gear">مهندس سیستم</option>
-                                    <option value="crown">فرمانده ارشد</option>
-                                    <option value="user">کاربر مدرن</option>
+                                    <option value="shield">شیلد سایبرنتیک 🛡️</option>
+                                    <option value="astro">فضانورد استراتژیست 👨‍🚀</option>
+                                    <option value="ninja">نخبه سایبرنتیک 🥷</option>
+                                    <option value="gear">مهندس سیستم ⚙️</option>
+                                    <option value="crown">فرمانده ارشد 👑</option>
+                                    <option value="user">کاربر الیت 👤</option>
+                                    <option value="bolt">انرژی کوانتومی ⚡</option>
+                                    <option value="fire">شعله فروزان 🔥</option>
+                                    <option value="brain">ذهن استراتژیک 🧠</option>
+                                    <option value="bullseye">هدف‌گیر دقیق 🎯</option>
+                                    <option value="dumbbell">قهرمان فولادی 🏋️</option>
                                 </select>
                             </div>
                             <input type="text" id="prof-role-input" placeholder="عنوان / تخصص..." value="STRAT.OS ELITE OPERATOR">
@@ -509,11 +534,15 @@
                             <div class="theme-card tc-monochrome" onclick="applyTheme('theme-monochrome', this)">مونوکروم</div>
                             <div class="theme-card tc-retrowave" onclick="applyTheme('theme-retrowave', this)">رترو آرکید</div>
                         </div>
+
+                        <div class="badges-showcase">
+                            <h4 style="font-size: 13px; margin-bottom: 12px; color: #fbbf24;"><svg class="ico"><use href="#i-crown"/></svg> نشان‌های افتخار و دستاوردها (Achievements)</h4>
+                            <div class="badges-grid" id="profile-badges-container"></div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- ================== بخش آمار و آنالیز جدید و فوق‌العاده زیبا ================== -->
             <section id="view-analytics" class="app-view">
                 <div class="kpi-grid" style="margin-bottom: 5px;">
                     <div class="kpi-card" style="border-color: rgba(129, 140, 248, 0.4);">
@@ -592,79 +621,160 @@
             </section>
 
             <section id="view-about" class="app-view">
-                <div class="content-grid">
-                    <div class="panel">
-                        <div class="panel-title"><span><svg class="ico"><use href="#i-bolt"/></svg> درباره سیستم‌عامل استراتژیک (STRAT.OS)</span></div>
-                        <p style="line-height: 1.8; color: var(--text-primary); font-size: 14px; margin-bottom: 15px;">
-                            <strong>STRAT.OS</strong> یک سیستم برنامه‌ریزی استراتژیک روزانه و پلتفرم تحلیل بهره‌وری پیشرفته است که با هدف بهینه‌سازی عملکرد، مدیریت هوشمند زمان و تحلیل دقیق الگوهای رفتاری طراحی و توسعه یافته است.
-                        </p>
-                        <p style="line-height: 1.8; color: var(--text-muted); font-size: 13.5px; margin-bottom: 25px;">
-                            این سیستم با بهره‌گیری از معماری Glassmorphism، تایپوگرافی زیبای میخک (Mikhak)، ذخیره‌سازی محلی و موتور تحلیل رفتار پویا، به شما کمک می‌کند تا ماموریت‌های روزانه خود را قفل‌گذاری کرده، عادات مثبت را پیگیری کنید و بر اساس زمان‌های طلایی فعالیت خود، تیپ شخصیتی بهره‌وری‌تان را بشناسید.
-                        </p>
-                        <div class="db-status-box" style="margin-bottom: 0; background: rgba(244, 63, 94, 0.05); border-color: rgba(244, 63, 94, 0.2);">
-                            <div class="db-status-info">
-                                <h4 style="color: #fb7185;"><svg class="ico"><use href="#i-heart" style="fill: #fb7185; stroke: none;"/></svg> تقدیم ویژه</h4>
-                                <p>توسعه‌یافته با عشق و احترام، به طور اختصاصی برای <strong>هانیه</strong></p>
+                <div class="about-hero-terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-dots"><span style="background:#f43f5e"></span><span style="background:#fbbf24"></span><span style="background:#34d399"></span></div>
+                        <span class="terminal-title">SYSTEM_CORE // STRAT.OS_V2.5_ELITE</span>
+                        <span class="badge low" style="font-size:10px;">ONLINE</span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="about-logo-box"><svg class="ico"><use href="#i-bolt"/></svg></div>
+                        <div class="terminal-text">
+                            <h2>STRAT.OS <span>ELITE OPERATING SYSTEM</span></h2>
+                            <p>پلتفرم پیشرفته مدیریت استراتژیک زمان، مهندسی عادات و تحلیل سایبرنتیک بهره‌وری روزانه.</p>
+                            <div class="terminal-status-row">
+                                <div><svg class="ico" style="color:#34d399"><use href="#i-check"/></svg> AI ENGINE: <strong>GEMINI INTEGRATED</strong></div>
+                                <div><svg class="ico" style="color:#38bdf8"><use href="#i-shield"/></svg> SECURITY: <strong>MAXIMUM ENCRYPTION</strong></div>
+                                <div><svg class="ico" style="color:#fbbf24"><use href="#i-database"/></svg> STORAGE: <strong>MULTI-ENGINE HYBRID</strong></div>
                             </div>
-                            <span class="badge high">SPECIAL EDITION</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-grid" style="margin-top: 5px;">
+                    <div class="panel">
+                        <div class="panel-title"><span><svg class="ico"><use href="#i-astro"/></svg> معماری و فلسفه طراحی</span></div>
+                        <p class="about-desc">
+                            سیستم‌عامل <strong>STRAT.OS</strong> با بهره‌گیری از معماری گلس‌مورفیسم پیشرفته (Glassmorphism) و اصول روانشناسی بهره‌وری طراحی شده است. هدف این هسته، تبدیل اهداف کلان و پیچیده به ماموریت‌های خرد روزانه، رصد پیوسته زنجیره عادات و ایجاد تمرکز عمیق (Deep Work) برای فتح قله‌های موفقیت است.
+                        </p>
+                        <div class="dedication-card-vip">
+                            <div class="dedication-icon"><svg class="ico"><use href="#i-heart"/></svg></div>
+                            <div class="dedication-text">
+                                <h4>تقدیم با احترام و عشق</h4>
+                                <p>این پلتفرم و تمامی الگوریتم‌های هوشمند آن به طور اختصاصی و با الهام از ارزش‌آفرینی ویژه برای <strong>هانیه</strong> طراحی و توسعه یافته است.</p>
+                            </div>
+                            <span class="dedication-badge">SPECIAL EDITION</span>
                         </div>
                     </div>
 
                     <div class="panel">
-                        <div class="panel-title"><span><svg class="ico"><use href="#i-gear"/></svg> مشخصات فنی و سازندگان</span></div>
-                        <div class="config-row">
-                            <div class="config-info"><h4>توسعه‌دهنده و معمار اصلی</h4><p>طراحی معماری، منطق سیستم و رابط کاربری</p></div>
-                            <span style="font-family: var(--font-main); font-weight: bold;"><a href="https://pourhajidev.ir" target="_blank" class="dev-link">PourhajiDeV &lt;/&gt;</a></span>
+                        <div class="panel-title"><span><svg class="ico"><use href="#i-gear"/></svg> مشخصات فنی و تیم مهندسی</span></div>
+                        <div class="tech-specs-grid">
+                            <div class="tech-spec-card">
+                                <span class="tech-label"><svg class="ico"><use href="#i-ninja"/></svg> معمار و توسعه‌دهنده</span>
+                                <a href="https://pourhajidev.ir" target="_blank" class="dev-link-large">PourhajiDeV &lt;/&gt;</a>
+                            </div>
+                            <div class="tech-spec-card">
+                                <span class="tech-label"><svg class="ico"><use href="#i-brain"/></svg> هسته پردازشی AI</span>
+                                <strong style="color: #818cf8;">Gemini Intelligence</strong>
+                            </div>
+                            <div class="tech-spec-card">
+                                <span class="tech-label"><svg class="ico"><use href="#i-palette"/></svg> تایپوگرافی محلی</span>
+                                <strong style="color: #34d399;">Mikhak-FD Typeface</strong>
+                            </div>
+                            <div class="tech-spec-card">
+                                <span class="tech-label"><svg class="ico"><use href="#i-database"/></svg> موتور ذخیره‌سازی</span>
+                                <strong style="color: #fbbf24;">Multi-Engine Storage</strong>
+                            </div>
                         </div>
-                        <div class="config-row">
-                            <div class="config-info"><h4>دستیار هوش مصنوعی</h4><p>همفکری استراتژیک و بهینه‌سازی الگوریتم‌ها</p></div>
-                            <span style="font-family: var(--font-main); font-weight: bold; color: #818cf8;">Gemini AI</span>
-                        </div>
-                        <div class="config-row">
-                            <div class="config-info"><h4>تایپوگرافی و فونت</h4><p>تایپ‌فیس محلی و زیبای میخک (Mikhak-FD)</p></div>
-                            <span style="font-weight: bold; color: #34d399;">Mikhak Font</span>
-                        </div>
-                        <div class="config-row" style="border-bottom: none;">
-                            <div class="config-info"><h4>نسخه و وضعیت هسته</h4><p>الگوریتم‌های ۸‌گانه زمان‌سنجی، استریک و تحلیل رفتار</p></div>
-                            <span class="badge low">v2.0 STRAT.OS</span>
+                        <div class="about-footer-note">
+                            <svg class="ico"><use href="#i-shield"/></svg>
+                            <span>تمامی داده‌های شما با استانداردهای امنیتی بالا در مرورگر یا سرور شخصی شما محافظت می‌شوند.</span>
                         </div>
                     </div>
                 </div>
             </section>
 
             <section id="view-settings" class="app-view">
+                <div class="panel" style="margin-bottom: 5px; border-color: rgba(56, 189, 248, 0.3);">
+                    <div class="panel-title">
+                        <span><svg class="ico" style="color:#38bdf8;"><use href="#i-sliders"/></svg> حالت نمایش و پیچیدگی سیستم‌عامل (UI/UX Mode)</span>
+                        <span class="badge low">کنترل دسترسی</span>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px;">
+                        بر اساس نیاز خود تعیین کنید رابط کاربری سایت چقدر ساده یا تخصصی باشد. حالت پیش‌فرض روی <strong>«کامل»</strong> تنظیم شده است:
+                    </p>
+                    <div class="ui-mode-grid">
+                        <div class="ui-mode-card" data-mode="simple" onclick="setUiMode('simple', this)">
+                            <div class="ui-mode-header">
+                                <div class="ui-mode-icon" style="background: rgba(52, 211, 153, 0.15); color: #34d399;">🌱</div>
+                                <div>
+                                    <h4>ساده (Simple)</h4>
+                                    <span class="ui-mode-tag" style="color: #34d399;">مینیمال و روان</span>
+                                </div>
+                            </div>
+                            <p>رابط کاربری بسیار راحت و خلوت. مخفی شدن تنظیمات سرور، آنالیزها، عادات و برنامه ورزشی. تمرکز صرفاً روی تسک‌ها، اهداف و تایمر.</p>
+                        </div>
+                        <div class="ui-mode-card" data-mode="advanced" onclick="setUiMode('advanced', this)">
+                            <div class="ui-mode-header">
+                                <div class="ui-mode-icon" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;">⚡</div>
+                                <div>
+                                    <h4>پیشرفته (Advanced)</h4>
+                                    <span class="ui-mode-tag" style="color: #38bdf8;">تعادل استاندارد</span>
+                                </div>
+                            </div>
+                            <p>دسترسی به تقویم، برنامه ورزشی و عادات روزانه بدون درگیر شدن با تنظیمات پیچیده سرورهای ابری، دیتابیس‌های خارجی و آنالیزهای سنگین.</p>
+                        </div>
+                        <div class="ui-mode-card active" data-mode="full" onclick="setUiMode('full', this)">
+                            <div class="ui-mode-header">
+                                <div class="ui-mode-icon" style="background: rgba(244, 63, 94, 0.15); color: #fb7185;">🚀</div>
+                                <div>
+                                    <h4>کامل (Full Elite)</h4>
+                                    <span class="ui-mode-tag" style="color: #fb7185;">پیش‌فرض سیستم</span>
+                                </div>
+                            </div>
+                            <p>دسترسی بدون محدودیت به تمام هسته سیستم‌عامل، آنالیزهای عملکرد، اتصال به دیتابیس‌های خارجی (SQLite/MySQL) و ماشین حساب 1RM ورزشی.</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="content-grid">
                     <div class="panel">
-                        <div class="panel-title"><span><svg class="ico"><use href="#i-gear"/></svg> تنظیمات عمومی سیستم</span></div>
-                        <div class="config-row">
-                            <div class="config-info"><h4><svg class="ico"><use href="#i-clock"/></svg> منطقه زمانی (Timezone)</h4><p>ساعت سیستم بر چه اساسی نمایش داده شود؟</p></div>
+                        <div class="panel-title"><span><svg class="ico"><use href="#i-gear"/></svg> تنظیمات عمومی و منطقه‌ای</span></div>
+                        <div class="config-row-modern">
+                            <div class="config-info">
+                                <h4><svg class="ico"><use href="#i-clock"/></svg> منطقه زمانی سیستم (Timezone)</h4>
+                                <p>ساعت زنده هدر و محاسبات پایان روز بر اساس این منطقه باشد:</p>
+                            </div>
                             <select id="config-timezone" class="config-select" onchange="changeConfig()">
-                                <option value="Asia/Tehran">تهران (Tehran)</option>
-                                <option value="Europe/London">لندن (London)</option>
-                                <option value="America/New_York">نیویورک (New York)</option>
+                                <option value="Asia/Tehran">تهران (Tehran - IRST)</option>
+                                <option value="Europe/London">لندن (London - GMT)</option>
+                                <option value="America/New_York">نیویورک (New York - EST)</option>
                                 <option value="UTC">جهانی (UTC)</option>
                             </select>
                         </div>
-                        <div class="config-row">
-                            <div class="config-info"><h4><svg class="ico"><use href="#i-calendar"/></svg> فرمت نمایش تقویم</h4><p>تغییر تقویم هدر سیستم</p></div>
+                        <div class="config-row-modern">
+                            <div class="config-info">
+                                <h4><svg class="ico"><use href="#i-calendar"/></svg> تقویم و فرمت تاریخ</h4>
+                                <p>زبان و نوع گاه‌شمار سیستم‌عامل را انتخاب کنید:</p>
+                            </div>
                             <select id="config-calendar-type" class="config-select" onchange="changeConfig()">
-                                <option value="fa">هجری شمسی</option>
+                                <option value="fa">هجری شمسی (جلالی)</option>
                                 <option value="en">میلادی (Gregorian)</option>
                             </select>
                         </div>
-                        <div class="config-row">
-                            <div class="config-info"><h4><svg class="ico"><use href="#i-bell"/></svg> اعلان‌های مرورگر (Push Alerts)</h4><p>فعال‌سازی هشدارها برای اتمام تایمر تمرکز</p></div>
-                            <button class="btn-primary" style="background:#06b6d4;" onclick="requestNotificationPermission()"><svg class="ico"><use href="#i-bell"/></svg><span>فعال‌سازی</span></button>
+                        <div class="config-row-modern">
+                            <div class="config-info">
+                                <h4><svg class="ico"><use href="#i-bell"/></svg> اعلان‌های هوشمند مرورگر (Push Alerts)</h4>
+                                <p>ارسال نوتیفیکیشن در زمان اتمام تایمر تمرکز و یادآوری‌ها:</p>
+                            </div>
+                            <button class="btn-primary" style="background: var(--glow-cyan); color:#000;" onclick="requestNotificationPermission()">
+                                <svg class="ico"><use href="#i-bell"/></svg><span>فعال‌سازی هشدارها</span>
+                            </button>
                         </div>
-                        <div class="config-row">
-                            <div class="config-info"><h4><svg class="ico" style="color:#fb7185;"><use href="#i-alert"/></svg> پاکسازی هسته</h4><p style="color: #fb7185;">تمام داده‌ها، عادات و تاریخچه فرمت می‌شوند.</p></div>
-                            <button class="btn-primary" style="background: var(--glow-rose);" onclick="factoryResetDatabase()"><svg class="ico"><use href="#i-trash"/></svg><span>فرمت دیتابیس</span></button>
+                        <div class="danger-zone-box">
+                            <div class="config-info">
+                                <h4 style="color: #fb7185;"><svg class="ico" style="color: #fb7185;"><use href="#i-alert"/></svg> بازنشانی کارخانه (Factory Reset)</h4>
+                                <p style="color: #fecaca;">تمام تسک‌ها، عادات، برنامه ورزشی و تاریخچه شما برای همیشه پاک می‌شوند.</p>
+                            </div>
+                            <button class="btn-danger" onclick="factoryResetDatabase()">
+                                <svg class="ico"><use href="#i-trash"/></svg><span>فرمت کل دیتابیس</span>
+                            </button>
                         </div>
                     </div>
 
                     <div class="panel">
-                        <div class="panel-title"><span><svg class="ico"><use href="#i-database"/></svg> مدیریت پایگاه داده و ذخیره‌سازی</span></div>
-                        
+                        <div class="panel-title"><span><svg class="ico"><use href="#i-database"/></svg> موتور ذخیره‌سازی و بکاپ‌گیری</span></div>
                         <div class="db-status-box">
                             <div class="db-status-info">
                                 <h4><svg class="ico"><use href="#i-hard-drive"/></svg> موتور فعال: <span id="db-active-engine">LocalStorage</span></h4>
@@ -672,41 +782,46 @@
                             </div>
                             <span class="badge low"><svg class="ico"><use href="#i-check"/></svg> ACTIVE</span>
                         </div>
-
-                        <div class="config-row">
-                            <div class="config-info">
-                                <h4>انتخاب موتور دیتابیس (Storage Engine)</h4>
-                                <p>محل ذخیره‌سازی دائمی اطلاعات را تعیین کنید:</p>
+                        <div class="hide-in-simple hide-in-advanced">
+                            <div class="config-row-modern">
+                                <div class="config-info">
+                                    <h4>انتخاب موتور دیتابیس (Storage Engine)</h4>
+                                    <p>محل ذخیره‌سازی دائمی اطلاعات را تعیین کنید:</p>
+                                </div>
+                                <select id="db-engine-select" class="config-select" onchange="changeDbEngine()">
+                                    <option value="local">LocalStorage (مرورگر)</option>
+                                    <option value="sqlite">SQLite (فایل سیستم محلی)</option>
+                                    <option value="mysql">MySQL / REST API (بک‌اند سرور)</option>
+                                </select>
                             </div>
-                            <select id="db-engine-select" class="config-select" onchange="changeDbEngine()">
-                                <option value="local">LocalStorage (مرورگر)</option>
-                                <option value="sqlite">SQLite (ذخیره روی فایل سیستم)</option>
-                                <option value="mysql">MySQL / REST API (بک‌اند سرور)</option>
-                            </select>
+                            <div id="sqlite-config-panel" class="db-extended-panel">
+                                <h4 style="color: #38bdf8;"><svg class="ico"><use href="#i-folder"/></svg> اتصال به SQLite File System</h4>
+                                <p>با کلیک روی دکمه زیر، یک فایل در سیستم خود انتخاب کنید تا از این پس اطلاعات مستقیماً روی هارد دیسک شما نوشته شود.</p>
+                                <button class="btn-secondary" style="width: 100%; border-color: #38bdf8; color:#38bdf8;" onclick="connectLocalSqliteFile()"><svg class="ico"><use href="#i-link"/></svg><span>اتصال به فایل دیتابیس</span></button>
+                            </div>
+                            <div id="mysql-config-panel" class="db-extended-panel">
+                                <h4 style="color: #fbbf24;"><svg class="ico"><use href="#i-server"/></svg> اتصال به سرور MySQL (API Endpoint)</h4>
+                                <p>آدرس API سرور بک‌اند خود را جهت همگام‌سازی زنده وارد کنید:</p>
+                                <input type="text" id="mysql-endpoint-input" placeholder="https://yourserver.com/api/stratos">
+                                <button class="btn-secondary" style="width: 100%; border-color: #fbbf24; color:#fbbf24;" onclick="saveMysqlConfig()"><svg class="ico"><use href="#i-cloud-up"/></svg><span>ذخیره تنظیمات سرور</span></button>
+                            </div>
                         </div>
-
-                        <div id="sqlite-config-panel" style="display: none; background: rgba(255,255,255,0.02); padding: 14px; border-radius: 14px; margin: 10px 0; border: 1px dashed var(--glass-border);">
-                            <h4 style="font-size: 13px; color: #38bdf8; margin-bottom: 8px;"><svg class="ico"><use href="#i-folder"/></svg> ذخیره‌سازی محلی (SQLite File System)</h4>
-                            <p style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 12px;">با کلیک روی دکمه زیر، یک فایل در سیستم خود انتخاب کنید تا از این پس تمام اطلاعات مستقیماً روی هارد دیسک شما سیو شود.</p>
-                            <button class="btn-secondary" style="width: 100%; border-color: #38bdf8;" onclick="connectLocalSqliteFile()"><svg class="ico"><use href="#i-link"/></svg><span>اتصال فایل دیتابیس روی سیستم</span></button>
+                        <div class="config-row-modern" style="margin-top: 10px;">
+                            <div class="config-info">
+                                <h4>خروجی گرفتن از اطلاعات (Export)</h4>
+                                <p>دانلود کل دیتابیس به صورت فایل JSON قابل بازیابی</p>
+                            </div>
+                            <button class="btn-primary" style="background: var(--glow-emerald);" onclick="exportDatabase()">
+                                <svg class="ico"><use href="#i-download"/></svg><span>دانلود بکاپ</span></button>
                         </div>
-
-                        <div id="mysql-config-panel" style="display: none; background: rgba(255,255,255,0.02); padding: 14px; border-radius: 14px; margin: 10px 0; border: 1px dashed var(--glass-border);">
-                            <h4 style="font-size: 13px; color: #fbbf24; margin-bottom: 8px;"><svg class="ico"><use href="#i-server"/></svg> اتصال به سرور MySQL (API Endpoint)</h4>
-                            <p style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 12px;">آدرس API سرور بک‌اند خود را جهت همگام‌سازی زنده اطلاعات وارد کنید:</p>
-                            <input type="text" id="mysql-endpoint-input" placeholder="https://yourserver.com/api/stratos" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 10px; color: #fff; font-size: 12px; margin-bottom: 10px;">
-                            <button class="btn-secondary" style="width: 100%; border-color: #fbbf24;" onclick="saveMysqlConfig()"><svg class="ico"><use href="#i-cloud-up"/></svg><span>ذخیره تنظیمات سرور</span></button>
-                        </div>
-
-                        <div class="config-row">
-                            <div class="config-info"><h4>خروجی گرفتن از اطلاعات (Export)</h4><p>دانلود کل دیتابیس به صورت فایل JSON قابل بازیابی</p></div>
-                            <button class="btn-primary" style="background: var(--glow-emerald);" onclick="exportDatabase()"><svg class="ico"><use href="#i-download"/></svg><span>دانلود بکاپ</span></button>
-                        </div>
-
-                        <div class="config-row">
-                            <div class="config-info"><h4>بازیابی اطلاعات (Import)</h4><p>آپلود فایل بکاپ و جایگزینی با دیتای فعلی</p></div>
+                        <div class="config-row-modern" style="border-bottom: none;">
+                            <div class="config-info">
+                                <h4>بازیابی اطلاعات (Import)</h4>
+                                <p>آپلود فایل بکاپ و جایگزینی با دیتای فعلی</p>
+                            </div>
                             <input type="file" id="import-db-file" style="display: none;" accept=".json" onchange="importDatabase(event)">
-                            <button class="btn-secondary" onclick="document.getElementById('import-db-file').click()"><svg class="ico"><use href="#i-upload"/></svg><span>آپلود بکاپ</span></button>
+                            <button class="btn-secondary" onclick="document.getElementById('import-db-file').click()">
+                                <svg class="ico"><use href="#i-upload"/></svg><span>آپلود بکاپ</span></button>
                         </div>
                     </div>
                 </div>
