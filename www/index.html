@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>STRAT.OS - Strategic Operating System</title>
+    <title>STRAT.OS - سیستم مدیریت بهره‌وری</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -60,6 +60,24 @@
         <symbol id="i-dumbbell" viewBox="0 0 24 24"><path d="M6 4h12M6 20h12M12 4v16M3 8h6M3 16h6M15 8h6M15 16h6"/></symbol>
     </svg>
 
+    <div id="auth-modal" class="auth-modal-overlay">
+        <div class="auth-modal-panel">
+            <div class="auth-modal-title">
+                <svg class="ico"><use href="#i-bolt"/></svg>
+                <span id="auth-title-text">ورود به سیستم</span>
+            </div>
+            <div class="auth-form-group">
+                <input type="text" id="auth-username" placeholder="نام کاربری">
+                <input type="password" id="auth-password" placeholder="رمز عبور">
+                <button class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="handleAuthSubmit()" id="auth-submit-btn">ورود</button>
+            </div>
+            <div class="auth-toggle-mode">
+                <span id="auth-toggle-msg">حساب کاربری ندارید؟</span>
+                <strong onclick="toggleAuthMode()" id="auth-toggle-link">ثبت‌نام کنید</strong>
+            </div>
+        </div>
+    </div>
+
     <div class="glass-bg-container">
         <div class="sphere sphere-one"></div><div class="sphere sphere-two"></div><div class="sphere sphere-three"></div>
     </div>
@@ -69,10 +87,10 @@
             <div class="logo"><svg class="ico"><use href="#i-bolt"/></svg> STRAT.OS</div>
             <nav class="nav-menu">
                 <div class="nav-item active" onclick="switchAppView('dashboard', this)">
-                    <svg class="ico"><use href="#i-chart-pie"/></svg><span>داشبورد استراتژیک</span>
+                    <svg class="ico"><use href="#i-chart-pie"/></svg><span>داشبورد عادی</span>
                 </div>
                 <div class="nav-item hide-in-simple" onclick="switchAppView('workout', this)">
-                    <svg class="ico"><use href="#i-dumbbell"/></svg><span>برنامه ورزشی حرفه‌ای</span>
+                    <svg class="ico"><use href="#i-dumbbell"/></svg><span>برنامه ورزشی</span>
                 </div>
                 <div class="nav-item" onclick="switchAppView('goals', this)">
                     <svg class="ico"><use href="#i-flag"/></svg><span>اهداف و چشم‌انداز</span>
@@ -90,7 +108,7 @@
                     <svg class="ico"><use href="#i-chart-line"/></svg><span>آنالیز عملکرد</span>
                 </div>
                 <div class="nav-item" onclick="switchAppView('about', this)">
-                    <svg class="ico"><use href="#i-astro"/></svg><span>درباره STRAT.OS</span>
+                    <svg class="ico"><use href="#i-astro"/></svg><span>درباره سیستم</span>
                 </div>
                 <div class="nav-item" onclick="switchAppView('settings', this)">
                     <svg class="ico"><use href="#i-sliders"/></svg><span>تنظیمات هسته</span>
@@ -109,7 +127,7 @@
         <main class="main-workspace">
             <header class="top-header">
                 <div class="header-titles">
-                    <h1 id="view-title">داشبورد استراتژیک</h1>
+                    <h1 id="view-title">داشبورد عادی</h1>
                     <p>
                         <span id="live-date">...</span>
                         <span>|</span>
@@ -190,7 +208,7 @@
                         <div class="panel-title" style="margin-top: 25px; margin-bottom: 12px;">
                             <span><svg class="ico"><use href="#i-pen"/></svg> یادداشت سریع امروز</span>
                         </div>
-                        <textarea id="notes-area" placeholder="نکات استراتژیک امروز را اینجا یادداشت کنید..." oninput="saveCurrentNotes()"></textarea>
+                        <textarea id="notes-area" placeholder="نکات امروز را اینجا یادداشت کنید..." oninput="saveCurrentNotes()"></textarea>
                     </div>
                 </div>
             </section>
@@ -290,7 +308,7 @@
                         </div>
 
                         <div class="fit-template-box hide-in-advanced">
-                            <div class="fit-template-title"><svg class="ico"><use href="#i-bolt"/></svg> بارگذاری سریع برنامه‌های فوق‌حرفه‌ای (الیت):</div>
+                            <div class="fit-template-title"><svg class="ico"><use href="#i-bolt"/></svg> بارگذاری سریع برنامه‌ها:</div>
                             <div class="fit-template-pills">
                                 <button class="btn-template" onclick="loadEliteRoutine('ppl')">🔥 برنامه PPL (پوش - پول - لگ)</button>
                                 <button class="btn-template" onclick="loadEliteRoutine('fullbody')">⚡ برنامه فول بادی (۳ روزه)</button>
@@ -313,7 +331,7 @@
 
             <section id="view-goals" class="app-view">
                 <div class="panel" style="margin-bottom: 5px;">
-                    <div class="panel-title"><span><svg class="ico"><use href="#i-flag"/></svg> ثبت هدف یا چشم‌انداز استراتژیک جدید</span></div>
+                    <div class="panel-title"><span><svg class="ico"><use href="#i-flag"/></svg> ثبت هدف یا چشم‌انداز جدید</span></div>
                     <div class="action-form" style="margin-top: 0;">
                         <input type="text" id="new-goal-title" placeholder="عنوان هدف (مثلاً: تسلط بر پایتون، راه‌اندازی کسب‌وکار و...)...">
                         <select id="new-goal-type" style="min-width: 150px;">
@@ -388,7 +406,7 @@
                 <div class="calendar-layout">
                     <div class="panel">
                         <div class="panel-title">
-                            <span><svg class="ico"><use href="#i-calendar"/></svg> تقویم عملکرد و موفقیت ماهانه</span>
+                            <span><svg class="ico"><use href="#i-calendar"/></svg> تقویم عملکرد ماهانه</span>
                             <span id="cal-month-title" style="font-size: 14px; color: #818cf8;">...</span>
                         </div>
                         <div class="calendar-grid">
@@ -431,14 +449,14 @@
             <section id="view-profile" class="app-view">
                 <div class="content-grid">
                     <div class="panel" style="align-items: center;">
-                        <div class="panel-title" style="width: 100%;"><span><svg class="ico"><use href="#i-id-card"/></svg> کارت شناسایی سایبرنتیک</span></div>
+                        <div class="panel-title" style="width: 100%;"><span><svg class="ico"><use href="#i-id-card"/></svg> کارت شناسایی سیستم</span></div>
                         
                         <div class="profile-export-card pt-cyber" id="export-card-dom">
                             <div class="profile-avatar-wrapper">
                                 <div class="profile-avatar" id="prof-display-avatar"><svg class="ico"><use href="#i-shield"/></svg></div>
                                 <div class="profile-level-badge" id="prof-display-level">LVL 1</div>
                             </div>
-                            <div class="profile-name" id="prof-display-name">فرمانده استراتژیک</div>
+                            <div class="profile-name" id="prof-display-name">کاربر سیستم</div>
                             <div class="profile-role" id="prof-display-role">STRAT.OS ELITE OPERATOR</div>
                             <div class="profile-bio" id="prof-display-bio">«تمرکز روی اهداف، کلید فتح آینده است...»</div>
                             
@@ -473,17 +491,17 @@
 
                         <div class="action-form" style="margin-top: 22px; width: 100%; max-width: 440px; flex-direction: column; gap: 10px;">
                             <div style="display: flex; gap: 10px; width: 100%;">
-                                <input type="text" id="prof-name-input" placeholder="نام کاربری..." value="فرمانده استراتژیک" style="flex: 2;">
+                                <input type="text" id="prof-name-input" placeholder="نام کاربری..." value="کاربر سیستم" style="flex: 2;">
                                 <select id="prof-avatar-select" style="flex: 1;" onchange="updateProfileAvatar()">
-                                    <option value="shield">شیلد سایبرنتیک 🛡️</option>
-                                    <option value="astro">فضانورد استراتژیست 👨‍🚀</option>
-                                    <option value="ninja">نخبه سایبرنتیک 🥷</option>
+                                    <option value="shield">شیلد 🛡️</option>
+                                    <option value="astro">فضانورد 👨‍🚀</option>
+                                    <option value="ninja">نخبه 🥷</option>
                                     <option value="gear">مهندس سیستم ⚙️</option>
                                     <option value="crown">فرمانده ارشد 👑</option>
                                     <option value="user">کاربر الیت 👤</option>
                                     <option value="bolt">انرژی کوانتومی ⚡</option>
-                                    <option value="fire">شعله فروزان 🔥</option>
-                                    <option value="brain">ذهن استراتژیک 🧠</option>
+                                    <option value="fire">شعله 🔥</option>
+                                    <option value="brain">ذهن فعال 🧠</option>
                                     <option value="bullseye">هدف‌گیر دقیق 🎯</option>
                                     <option value="dumbbell">قهرمان فولادی 🏋️</option>
                                 </select>
@@ -581,7 +599,7 @@
                         </div>
 
                         <div class="ai-insight-box">
-                            <div class="ai-title"><svg class="ico"><use href="#i-astro"/></svg> تحلیل هوشمند استراتژیک (AI INSIGHTS):</div>
+                            <div class="ai-title"><svg class="ico"><use href="#i-astro"/></svg> تحلیل هوشمند راندمان (AI INSIGHTS):</div>
                             <div class="ai-text" id="stat-ai-recommendation">در حال تحلیل الگوهای رفتاری و داده‌های بهره‌وری شما...</div>
                         </div>
                     </div>
@@ -615,7 +633,7 @@
                 </div>
 
                 <div class="panel" style="margin-top: 5px;">
-                    <div class="panel-title"><span><svg class="ico"><use href="#i-calendar"/></svg> هیت‌مپ فعالیت استراتژیک ۳۰ روز گذشته (Productivity Grid)</span><span style="font-size:11px; color:var(--text-muted);">هر مربع = یک روز کاری</span></div>
+                    <div class="panel-title"><span><svg class="ico"><use href="#i-calendar"/></svg> هیت‌مپ فعالیت ۳۰ روز گذشته (Productivity Grid)</span><span style="font-size:11px; color:var(--text-muted);">هر مربع = یک روز کاری</span></div>
                     <div class="heatmap-grid" id="analytics-heatmap"></div>
                 </div>
             </section>
@@ -630,8 +648,8 @@
                     <div class="terminal-body">
                         <div class="about-logo-box"><svg class="ico"><use href="#i-bolt"/></svg></div>
                         <div class="terminal-text">
-                            <h2>STRAT.OS <span>ELITE OPERATING SYSTEM</span></h2>
-                            <p>پلتفرم پیشرفته مدیریت استراتژیک زمان، مهندسی عادات و تحلیل سایبرنتیک بهره‌وری روزانه.</p>
+                            <h2>STRAT.OS <span>سیستم مدیریت زمان</span></h2>
+                            <p>پلتفرم مدیریت زمان، مهندسی عادات و تحلیل بهره‌وری روزانه.</p>
                             <div class="terminal-status-row">
                                 <div><svg class="ico" style="color:#34d399"><use href="#i-check"/></svg> AI ENGINE: <strong>GEMINI INTEGRATED</strong></div>
                                 <div><svg class="ico" style="color:#38bdf8"><use href="#i-shield"/></svg> SECURITY: <strong>MAXIMUM ENCRYPTION</strong></div>
@@ -645,7 +663,7 @@
                     <div class="panel">
                         <div class="panel-title"><span><svg class="ico"><use href="#i-astro"/></svg> معماری و فلسفه طراحی</span></div>
                         <p class="about-desc">
-                            سیستم‌عامل <strong>STRAT.OS</strong> با بهره‌گیری از معماری گلس‌مورفیسم پیشرفته (Glassmorphism) و اصول روانشناسی بهره‌وری طراحی شده است. هدف این هسته، تبدیل اهداف کلان و پیچیده به ماموریت‌های خرد روزانه، رصد پیوسته زنجیره عادات و ایجاد تمرکز عمیق (Deep Work) برای فتح قله‌های موفقیت است.
+                            سیستم <strong>STRAT.OS</strong> با بهره‌گیری از معماری گلس‌مورفیسم پیشرفته (Glassmorphism) و اصول روانشناسی بهره‌وری طراحی شده است. هدف این هسته، تبدیل اهداف کلان و پیچیده به ماموریت‌های خرد روزانه، رصد پیوسته زنجیره عادات و ایجاد تمرکز عمیق (Deep Work) است.
                         </p>
                         <div class="dedication-card-vip">
                             <div class="dedication-icon"><svg class="ico"><use href="#i-heart"/></svg></div>
@@ -688,7 +706,7 @@
             <section id="view-settings" class="app-view">
                 <div class="panel" style="margin-bottom: 5px; border-color: rgba(56, 189, 248, 0.3);">
                     <div class="panel-title">
-                        <span><svg class="ico" style="color:#38bdf8;"><use href="#i-sliders"/></svg> حالت نمایش و پیچیدگی سیستم‌عامل (UI/UX Mode)</span>
+                        <span><svg class="ico" style="color:#38bdf8;"><use href="#i-sliders"/></svg> حالت نمایش و پیچیدگی سیستم (UI/UX Mode)</span>
                         <span class="badge low">کنترل دسترسی</span>
                     </div>
                     <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px;">
@@ -723,7 +741,7 @@
                                     <span class="ui-mode-tag" style="color: #fb7185;">پیش‌فرض سیستم</span>
                                 </div>
                             </div>
-                            <p>دسترسی بدون محدودیت به تمام هسته سیستم‌عامل، آنالیزهای عملکرد، اتصال به دیتابیس‌های خارجی (SQLite/MySQL) و ماشین حساب 1RM ورزشی.</p>
+                            <p>دسترسی بدون محدودیت به تمام هسته سیستم، آنالیزهای عملکرد، اتصال به دیتابیس‌های خارجی و ماشین حساب 1RM ورزشی.</p>
                         </div>
                     </div>
                 </div>
@@ -746,7 +764,7 @@
                         <div class="config-row-modern">
                             <div class="config-info">
                                 <h4><svg class="ico"><use href="#i-calendar"/></svg> تقویم و فرمت تاریخ</h4>
-                                <p>زبان و نوع گاه‌شمار سیستم‌عامل را انتخاب کنید:</p>
+                                <p>زبان و نوع گاه‌شمار سیستم را انتخاب کنید:</p>
                             </div>
                             <select id="config-calendar-type" class="config-select" onchange="changeConfig()">
                                 <option value="fa">هجری شمسی (جلالی)</option>
@@ -755,7 +773,7 @@
                         </div>
                         <div class="config-row-modern">
                             <div class="config-info">
-                                <h4><svg class="ico"><use href="#i-bell"/></svg> اعلان‌های هوشمند مرورگر (Push Alerts)</h4>
+                                <h4><svg class="ico"><use href="#i-bell"/></svg> اعلان‌های مرورگر (Push Alerts)</h4>
                                 <p>ارسال نوتیفیکیشن در زمان اتمام تایمر تمرکز و یادآوری‌ها:</p>
                             </div>
                             <button class="btn-primary" style="background: var(--glow-cyan); color:#000;" onclick="requestNotificationPermission()">
@@ -763,6 +781,15 @@
                             </button>
                         </div>
                         <div class="danger-zone-box">
+                            <div class="config-info">
+                                <h4>خروج از حساب کاربری</h4>
+                                <p>قطع اتصال از دیتابیس آنلاین و بستن نشست فعلی:</p>
+                            </div>
+                            <button class="btn-danger" onclick="logoutUser()">
+                                <svg class="ico"><use href="#i-xmark"/></svg><span>خروج از حساب</span>
+                            </button>
+                        </div>
+                        <div class="danger-zone-box" style="margin-top: 10px;">
                             <div class="config-info">
                                 <h4 style="color: #fb7185;"><svg class="ico" style="color: #fb7185;"><use href="#i-alert"/></svg> بازنشانی کارخانه (Factory Reset)</h4>
                                 <p style="color: #fecaca;">تمام تسک‌ها، عادات، برنامه ورزشی و تاریخچه شما برای همیشه پاک می‌شوند.</p>
@@ -777,34 +804,10 @@
                         <div class="panel-title"><span><svg class="ico"><use href="#i-database"/></svg> موتور ذخیره‌سازی و بکاپ‌گیری</span></div>
                         <div class="db-status-box">
                             <div class="db-status-info">
-                                <h4><svg class="ico"><use href="#i-hard-drive"/></svg> موتور فعال: <span id="db-active-engine">LocalStorage</span></h4>
-                                <p id="db-status-desc">داده‌ها در حافظه امن مرورگر ذخیره می‌شوند.</p>
+                                <h4><svg class="ico"><use href="#i-hard-drive"/></svg> موتور فعال: <span id="db-active-engine">MySQL / Server Sync</span></h4>
+                                <p id="db-status-desc">داده‌ها در پایگاه داده مرکزی هاست cPanel ذخیره می‌شوند.</p>
                             </div>
-                            <span class="badge low"><svg class="ico"><use href="#i-check"/></svg> ACTIVE</span>
-                        </div>
-                        <div class="hide-in-simple hide-in-advanced">
-                            <div class="config-row-modern">
-                                <div class="config-info">
-                                    <h4>انتخاب موتور دیتابیس (Storage Engine)</h4>
-                                    <p>محل ذخیره‌سازی دائمی اطلاعات را تعیین کنید:</p>
-                                </div>
-                                <select id="db-engine-select" class="config-select" onchange="changeDbEngine()">
-                                    <option value="local">LocalStorage (مرورگر)</option>
-                                    <option value="sqlite">SQLite (فایل سیستم محلی)</option>
-                                    <option value="mysql">MySQL / REST API (بک‌اند سرور)</option>
-                                </select>
-                            </div>
-                            <div id="sqlite-config-panel" class="db-extended-panel">
-                                <h4 style="color: #38bdf8;"><svg class="ico"><use href="#i-folder"/></svg> اتصال به SQLite File System</h4>
-                                <p>با کلیک روی دکمه زیر، یک فایل در سیستم خود انتخاب کنید تا از این پس اطلاعات مستقیماً روی هارد دیسک شما نوشته شود.</p>
-                                <button class="btn-secondary" style="width: 100%; border-color: #38bdf8; color:#38bdf8;" onclick="connectLocalSqliteFile()"><svg class="ico"><use href="#i-link"/></svg><span>اتصال به فایل دیتابیس</span></button>
-                            </div>
-                            <div id="mysql-config-panel" class="db-extended-panel">
-                                <h4 style="color: #fbbf24;"><svg class="ico"><use href="#i-server"/></svg> اتصال به سرور MySQL (API Endpoint)</h4>
-                                <p>آدرس API سرور بک‌اند خود را جهت همگام‌سازی زنده وارد کنید:</p>
-                                <input type="text" id="mysql-endpoint-input" placeholder="https://yourserver.com/api/stratos">
-                                <button class="btn-secondary" style="width: 100%; border-color: #fbbf24; color:#fbbf24;" onclick="saveMysqlConfig()"><svg class="ico"><use href="#i-cloud-up"/></svg><span>ذخیره تنظیمات سرور</span></button>
-                            </div>
+                            <span class="badge low"><svg class="ico"><use href="#i-check"/></svg> ONLINE</span>
                         </div>
                         <div class="config-row-modern" style="margin-top: 10px;">
                             <div class="config-info">

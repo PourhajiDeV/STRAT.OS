@@ -1,6 +1,7 @@
 const storageKey = "STRATOS_DATA";
 const historicalKey = "STRATOS_HISTORICAL";
-let fileHandle = null;
+const userSessionKey = "STRATOS_USER_ID";
+const mysqlEndpoint = "api.php";
 
 const IRAN_HOLIDAYS_OFFLINE = {
     "1/1": "جشن نوروز - تعطیل رسمی", "1/2": "عید نوروز - تعطیل رسمی", "1/3": "عید نوروز - تعطیل رسمی", "1/4": "عید نوروز - تعطیل رسمی",
@@ -18,14 +19,17 @@ function getIranianHoliday(dateObj) {
     } catch(e) { return null; }
 }
 
+let authMode = "login";
+let currentUserId = localStorage.getItem(userSessionKey) || null;
+
 let appState = JSON.parse(localStorage.getItem(storageKey)) || {
     tasks: [], habits: {}, goals: [], workoutProgram: {}, notes: "", 
     isDayEnded: false, lastDateStr: new Date().toDateString(),
     calLang: "fa", timezone: "Asia/Tehran", theme: "theme-cyberpunk", profileTheme: "pt-cyber",
     uiMode: "full",
-    userName: "فرمانده استراتژیک", userRole: "STRAT.OS ELITE OPERATOR",
+    userName: "کاربر سیستم", userRole: "STRAT.OS ELITE OPERATOR",
     userBio: "«تمرکز روی اهداف، کلید فتح آینده است...»", userAvatar: "shield",
-    dailyLogs: {}, dbEngine: "local", mysqlEndpoint: "",
+    dailyLogs: {}, dbEngine: "mysql", mysqlEndpoint: "api.php",
     streak: 0, lastStreakDate: "", points: 0, dailyPointsToday: 0, lastPointsDate: "", weeklyBonusDate: "",
     pomodoroCycles: 0, lastPomodoroDate: new Date().toDateString()
 };
@@ -43,7 +47,80 @@ let histData = JSON.parse(localStorage.getItem(historicalKey)) || {
 let selectedCalDateStr = new Date().toDateString();
 let activeWorkoutDay = "شنبه";
 
-document.addEventListener("DOMContentLoaded", () => {
+function toggleAuthMode() {
+    const titleText = document.getElementById("auth-title-text");
+    const submitBtn = document.getElementById("auth-submit-btn");
+    const toggleMsg = document.getElementById("auth-toggle-msg");
+    const toggleLink = document.getElementById("auth-toggle-link");
+    
+    if (authMode === "login") {
+        authMode = "register";
+        titleText.innerText = "ثبت‌نام حساب کاربری جدید";
+        submitBtn.innerText = "ثبت‌نام";
+        toggleMsg.innerText = "قبلاً حساب کاربری ساخته‌اید؟";
+        toggleLink.innerText = "وارد شوید";
+    } else {
+        authMode = "login";
+        titleText.innerText = "ورود به سیستم";
+        submitBtn.innerText = "ورود";
+        toggleMsg.innerText = "حساب کاربری ندارید؟";
+        toggleLink.innerText = "ثبت‌نام کنید";
+    }
+}
+
+async function handleAuthSubmit() {
+    const userEl = document.getElementById("auth-username");
+    const passEl = document.getElementById("auth-password");
+    const username = userEl.value.trim();
+    const password = passEl.value;
+
+    if (!username || !password) {
+        alert("لطفاً تمامی فیلدها را پر کنید");
+        return;
+    }
+
+    try {
+        const response = await fetch(mysqlEndpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: authMode, username: username, password: password })
+        });
+        const data = await response.json();
+        
+        if (data.status === "success") {
+            currentUserId = data.user_id;
+            localStorage.setItem(userSessionKey, currentUserId);
+            document.getElementById("auth-modal").style.display = "none";
+            if (authMode === "login") {
+                await loadFromMysqlServer();
+            } else {
+                appState.userName = username;
+                saveToDatabase();
+            }
+            location.reload();
+        } else {
+            alert(data.message || "عملیات با خطا مواجه شد");
+        }
+    } catch (e) {
+        alert("خطا در برقراری ارتباط با سرور");
+    }
+}
+
+function checkUserSession() {
+    const modal = document.getElementById("auth-modal");
+    if (!currentUserId) {
+        modal.style.display = "flex";
+    } else {
+        modal.style.display = "none";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    checkUserSession();
+    if (!currentUserId) return;
+
+    await loadFromMysqlServer();
+
     document.body.className = `${appState.theme || 'theme-cyberpunk'} mode-${appState.uiMode || 'full'}`;
     const cardEl = document.getElementById('export-card-dom');
     if(cardEl) cardEl.className = `profile-export-card ${appState.profileTheme || 'pt-cyber'}`;
@@ -54,13 +131,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('notes-area').value = appState.notes || "";
     document.getElementById('config-calendar-type').value = appState.calLang;
     document.getElementById('config-timezone').value = appState.timezone;
-    document.getElementById('db-engine-select').value = appState.dbEngine || "local";
     
     document.querySelectorAll('.ui-mode-card').forEach(c => c.classList.remove('active'));
     let activeModeCard = document.querySelector(`.ui-mode-card[data-mode="${appState.uiMode || 'full'}"]`);
     if(activeModeCard) activeModeCard.classList.add('active');
-
-    changeDbEngine();
 
     if(appState.userName) {
         document.getElementById('prof-display-name').innerText = appState.userName;
@@ -78,9 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('prof-display-avatar').innerHTML = `<svg class="ico"><use href="#i-${appState.userAvatar}"/></svg>`;
         document.getElementById('prof-avatar-select').value = appState.userAvatar;
     }
-    if(appState.mysqlEndpoint) {
-        document.getElementById('mysql-endpoint-input').value = appState.mysqlEndpoint;
-    }
 
     setInterval(updateLiveTime, 1000);
     setInterval(checkTaskDeadlines, 10000);
@@ -92,6 +163,13 @@ document.addEventListener("DOMContentLoaded", () => {
     updatePomodoroCyclesUI();
 });
 
+function logoutUser() {
+    localStorage.removeItem(userSessionKey);
+    localStorage.removeItem(storageKey);
+    localStorage.removeItem(historicalKey);
+    location.reload();
+}
+
 function setUiMode(mode, element) {
     document.body.classList.remove('mode-simple', 'mode-advanced', 'mode-full');
     document.body.classList.add('mode-' + mode);
@@ -102,77 +180,31 @@ function setUiMode(mode, element) {
     if(element) element.classList.add('active');
 }
 
-function changeDbEngine() {
-    const engine = document.getElementById('db-engine-select').value;
-    appState.dbEngine = engine;
-    saveToDatabase();
-
-    const sqlitePanel = document.getElementById('sqlite-config-panel');
-    const mysqlPanel = document.getElementById('mysql-config-panel');
-    const activeText = document.getElementById('db-active-engine');
-    const descText = document.getElementById('db-status-desc');
-
-    sqlitePanel.style.display = "none";
-    mysqlPanel.style.display = "none";
-
-    if(engine === 'sqlite') {
-        sqlitePanel.style.display = "flex";
-        activeText.innerText = "SQLite (Local File System)";
-        descText.innerText = "ذخیره‌سازی مستقیم روی فایل انتخابی در سیستم شما.";
-    } else if(engine === 'mysql') {
-        mysqlPanel.style.display = "flex";
-        activeText.innerText = "MySQL / REST API Server";
-        descText.innerText = "ارسال زنده کوئری‌ها و اطلاعات به سرور بک‌اند.";
-    } else {
-        activeText.innerText = "LocalStorage (مرورگر)";
-        descText.innerText = "داده‌ها در حافظه امن مرورگر ذخیره می‌شوند.";
-    }
-}
-
-async function connectLocalSqliteFile() {
-    if ('showSaveFilePicker' in window) {
-        try {
-            const options = {
-                suggestedName: 'STRATOS_Database.sqlite',
-                types: [{ description: 'SQLite / STRATOS Database', accept: { 'application/x-sqlite3': ['.sqlite', '.db', '.json'] } }]
-            };
-            fileHandle = await window.showSaveFilePicker(options);
-            alert(`فایل دیتابیس با موفقیت متصل شد:\n${fileHandle.name}\nاز این پس تمام اطلاعات روی این فایل در سیستم شما نوشته می‌شود.`);
-            saveToDatabase();
-        } catch (err) {}
-    } else {
-        alert("مرورگر شما از قابلیت File System Access API پشتیبانی نمی‌کند. لطفاً از Google Chrome یا Edge استفاده کنید.");
-    }
-}
-
-function saveMysqlConfig() {
-    const endpoint = document.getElementById('mysql-endpoint-input').value.trim();
-    appState.mysqlEndpoint = endpoint;
-    saveToDatabase();
-    alert("آدرس سرور MySQL ذخیره شد. درخواست‌ها به این آدرس ارسال خواهند شد.");
-}
-
 function saveToDatabase() {
     localStorage.setItem(storageKey, JSON.stringify(appState));
     localStorage.setItem(historicalKey, JSON.stringify(histData));
-    if (appState.dbEngine === 'sqlite' && fileHandle) writeToLocalFile();
-    if (appState.dbEngine === 'mysql' && appState.mysqlEndpoint) sendToMysqlServer();
+    if (currentUserId) sendToMysqlServer();
 }
 
-async function writeToLocalFile() {
+async function loadFromMysqlServer() {
+    if (!currentUserId) return;
     try {
-        const writable = await fileHandle.createWritable();
-        const fullBackup = { appState, histData, exportDate: new Date().toISOString() };
-        await writable.write(JSON.stringify(fullBackup, null, 2));
-        await writable.close();
+        const response = await fetch(`${mysqlEndpoint}?action=load_db&user_id=${currentUserId}`);
+        const data = await response.json();
+        if (data && data.appState && data.histData) {
+            appState = data.appState;
+            histData = data.histData;
+            localStorage.setItem(storageKey, JSON.stringify(appState));
+            localStorage.setItem(historicalKey, JSON.stringify(histData));
+        }
     } catch(e) {}
 }
 
 function sendToMysqlServer() {
-    fetch(appState.mysqlEndpoint, {
+    fetch(mysqlEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: "sync_db", payload: { appState, histData } })
+        body: JSON.stringify({ action: "sync_db", user_id: currentUserId, payload: { appState, histData } })
     }).catch(e => {});
 }
 
@@ -200,7 +232,7 @@ function importDatabase(event) {
                 saveToDatabase();
                 alert("اطلاعات دیتابیس با موفقیت بازیابی شد!");
                 location.reload();
-            } else { alert("فایل انتخاب‌شده ساختار معتبری برای STRAT.OS ندارد."); }
+            } else { alert("فایل انتخاب‌شده ساختار معتبری ندارد."); }
         } catch(err) { alert("خطا در پردازش فایل JSON."); }
     };
     reader.readAsText(file);
@@ -287,14 +319,14 @@ function switchAppView(viewId, element) {
     document.getElementById(`view-${viewId}`).classList.add('active-view');
     
     let titles = { 
-        dashboard: "داشبورد استراتژیک", 
-        workout: "برنامه ورزشی حرفه‌ای STRAT.OS",
+        dashboard: "داشبورد عادی", 
+        workout: "برنامه ورزشی",
         goals: "اهداف و چشم‌انداز کلان",
         timers: "زمان‌سنج و تمرکز", 
         calendar: "تقویم و گزارش‌ها", 
         profile: "پروفایل و تم‌ها", 
         analytics: "آنالیز عملکرد", 
-        about: "درباره STRAT.OS", 
+        about: "درباره سیستم", 
         settings: "تنظیمات عمومی" 
     };
     document.getElementById('view-title').innerText = titles[viewId] || "STRAT.OS";
@@ -332,34 +364,43 @@ function refreshUI() {
     }
 
     const listContainer = document.getElementById('task-list');
-    listContainer.innerHTML = '';
-    let doneCount = 0; let failCount = 0;
+    if(listContainer) {
+        listContainer.innerHTML = '';
+        let doneCount = 0; let failCount = 0;
 
-    appState.tasks.forEach(task => {
-        if(task.done) doneCount++;
-        if(task.failed) failCount++;
+        appState.tasks.forEach(task => {
+            if(task.done) doneCount++;
+            if(task.failed) failCount++;
 
-        let priorityText = task.priority === 'high' ? 'High' : (task.priority === 'medium' ? 'Med' : 'Low');
-        let timeText = (task.start || task.end) ? `<div class="task-time-info"><svg class="ico"><use href="#i-clock"/></svg> ${task.start || '...'} الی ${task.end || '...'}</div>` : "";
-        let stateClass = task.done ? 'completed' : (task.failed ? 'failed' : '');
-        
-        const li = document.createElement('li');
-        li.className = `task-item ${stateClass}`;
-        li.innerHTML = `
-            <div class="task-left">
-                ${!task.failed ? `<div class="check-container" onclick="toggleTask(${task.id})"><svg class="ico" style="${task.done ? '' : 'display:none;'}"><use href="#i-check"/></svg></div>` : '<svg class="ico" style="color:#fb7185;"><use href="#i-xmark"/></svg>'}
-                <div class="task-text"><span>${task.text}</span>${timeText}</div>
-            </div>
-            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
-                <span class="badge ${task.priority}">${priorityText}</span>
-                <div class="task-actions">
-                    ${!task.done && !task.failed ? `<button class="action-btn fail" onclick="markTaskFail(${task.id})"><svg class="ico"><use href="#i-xmark"/></svg></button>` : ''}
-                    <button class="action-btn del" onclick="deleteTask(${task.id})"><svg class="ico"><use href="#i-trash"/></svg></button>
+            let priorityText = task.priority === 'high' ? 'High' : (task.priority === 'medium' ? 'Med' : 'Low');
+            let timeText = (task.start || task.end) ? `<div class="task-time-info"><svg class="ico"><use href="#i-clock"/></svg> ${task.start || '...'} الی ${task.end || '...'}</div>` : "";
+            let stateClass = task.done ? 'completed' : (task.failed ? 'failed' : '');
+            
+            const li = document.createElement('li');
+            li.className = `task-item ${stateClass}`;
+            li.innerHTML = `
+                <div class="task-left">
+                    ${!task.failed ? `<div class="check-container" onclick="toggleTask(${task.id})"><svg class="ico" style="${task.done ? '' : 'display:none;'}"><use href="#i-check"/></svg></div>` : '<svg class="ico" style="color:#fb7185;"><use href="#i-xmark"/></svg>'}
+                    <div class="task-text"><span>${task.text}</span>${timeText}</div>
                 </div>
-            </div>
-        `;
-        listContainer.appendChild(li);
-    });
+                <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                    <span class="badge ${task.priority}">${priorityText}</span>
+                    <div class="task-actions">
+                        ${!task.done && !task.failed ? `<button class="action-btn fail" onclick="markTaskFail(${task.id})"><svg class="ico"><use href="#i-xmark"/></svg></button>` : ''}
+                        <button class="action-btn del" onclick="deleteTask(${task.id})"><svg class="ico"><use href="#i-trash"/></svg></button>
+                    </div>
+                </div>
+            `;
+            listContainer.appendChild(li);
+        });
+
+        document.getElementById('kpi-total').innerText = appState.tasks.length;
+        document.getElementById('kpi-done').innerText = doneCount;
+        document.getElementById('kpi-failed').innerText = failCount;
+        document.getElementById('kpi-today-points').innerText = `${appState.dailyPointsToday || 0} / 15`;
+
+        updateHistoryChartData(doneCount, appState.tasks.length);
+    }
 
     const habitContainer = document.getElementById('habits-list');
     if(habitContainer) {
@@ -377,14 +418,6 @@ function refreshUI() {
                 </div>`;
         }
     }
-
-    document.getElementById('kpi-total').innerText = appState.tasks.length;
-    document.getElementById('kpi-done').innerText = doneCount;
-    document.getElementById('kpi-failed').innerText = failCount;
-    document.getElementById('kpi-today-points').innerText = `${appState.dailyPointsToday || 0} / 15`;
-
-    updateHistoryChartData(doneCount, appState.tasks.length);
-    logCurrentDayStats(new Date().toDateString());
 }
 
 function addNewTask() {
@@ -439,7 +472,7 @@ function toggleTask(id) {
             if(new Date().getDay() === 5 && (appState.streak || 0) >= 7 && appState.weeklyBonusDate !== todayStr) {
                 appState.points += 50;
                 appState.weeklyBonusDate = todayStr;
-                triggerAlertNotification("🎉 پاداش استریک هفتگی!", "شما ۷ روز استریک کامل داشتید! ۵۰ امتیاز هدیه به شما تعلق گرفت.");
+                triggerAlertNotification("🎉 پاداش استریک هفتگی!", "شما ۷ روز استریک متوالی داشتید! ۵۰ امتیاز هدیه به شما تعلق گرفت.");
             }
         } else {
             histData.totalCompleted = Math.max(0, histData.totalCompleted - 1);
@@ -550,7 +583,7 @@ function logWorkoutExerciseAsTask(day, id) {
     
     saveToDatabase();
     refreshUI();
-    alert(`حرکت «${exercise.name}» به لیست تسک‌های استراتژیک امروز اضافه شد!`);
+    alert(`حرکت «${exercise.name}» به لیست تسک‌ها اضافه شد!`);
 }
 
 function calculate1RM() {
@@ -602,7 +635,7 @@ function loadEliteRoutine(type) {
                 { id: 16, name: "پرس سینه دمبل", category: "سینه", sets: "4", reps: "10", weight: "30kg", rest: "90" },
                 { id: 17, name: "قفسه سینه دستگاه (پک دک)", category: "سینه", sets: "3", reps: "15", weight: "40kg", rest: "60" },
                 { id: 18, name: "نشر از جلو دمبل", category: "سرشانه", sets: "3", reps: "12", weight: "12kg", rest: "60" },
-                { id: 19, name: "پشت بازو هالتر خوابیده (سوپینِیت)", category: "پشت بازو", sets: "4", reps: "10", weight: "30kg", rest: "75" }
+                { id: 19, name: "پشت بازو هالتر خوابیده", category: "پشت بازو", sets: "4", reps: "10", weight: "30kg", rest: "75" }
             ],
             "پنجشنبه": [
                 { id: 20, name: "لت از جلو دست باز (سیمکش)", category: "زیربغل و پشت", sets: "4", reps: "12", weight: "55kg", rest: "75" },
@@ -651,7 +684,7 @@ function loadEliteRoutine(type) {
     
     saveToDatabase();
     renderWorkoutHub();
-    alert("برنامه الیت با موفقیت بارگذاری و جایگزین شد!");
+    alert("برنامه با موفقیت بارگذاری و جایگزین شد!");
 }
 
 function renderWorkoutHub() {
@@ -710,7 +743,7 @@ function renderWorkoutHub() {
     excContainer.innerHTML = "";
 
     if(currentList.length === 0) {
-        excContainer.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 50px 20px; color: var(--text-muted); font-size: 13.5px; background: rgba(255,255,255,0.01); border-radius: 18px; border: 1px dashed var(--glass-border);">هیچ حرکت تمرینی برای این روز ثبت نشده است. از فرم سمت چپ حرکت جدید اضافه کنید یا از برنامه‌های آماده الیت استفاده نمایید.</div>`;
+        excContainer.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 50px 20px; color: var(--text-muted); font-size: 13.5px; background: rgba(255,255,255,0.01); border-radius: 18px; border: 1px dashed var(--glass-border);">هیچ حرکت تمرینی برای این روز ثبت نشده است.</div>`;
         return;
     }
 
@@ -730,9 +763,9 @@ function renderWorkoutHub() {
             </div>
 
             <div class="fit-exc-stats">
-                <div class="fit-stat-box"><span class="fit-stat-val">${ex.sets}</span><span class="fit-stat-lbl">ست (Sets)</span></div>
-                <div class="fit-stat-box"><span class="fit-stat-val">${ex.reps}</span><span class="fit-stat-lbl">تکرار (Reps)</span></div>
-                <div class="fit-stat-box"><span class="fit-stat-val">${ex.weight}</span><span class="fit-stat-lbl">وزنه (Weight)</span></div>
+                <div class="fit-stat-box"><span class="fit-stat-val">${ex.sets}</span><span class="fit-stat-lbl">ست</span></div>
+                <div class="fit-stat-box"><span class="fit-stat-val">${ex.reps}</span><span class="fit-stat-lbl">تکرار</span></div>
+                <div class="fit-stat-box"><span class="fit-stat-val">${ex.weight}</span><span class="fit-stat-lbl">وزنه</span></div>
             </div>
 
             <div style="font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between; padding: 0 4px;">
@@ -748,34 +781,6 @@ function renderWorkoutHub() {
         `;
         excContainer.appendChild(item);
     });
-}
-
-function exportWorkoutData() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState.workoutProgram, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `STRATOS_Workout_Routine.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-}
-
-function importWorkoutData(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const imported = JSON.parse(e.target.result);
-            if (imported && (imported["شنبه"] || imported["دوشنبه"] || imported["جمعه"])) {
-                appState.workoutProgram = imported;
-                saveToDatabase();
-                alert("برنامه ورزشی با موفقیت وارد سیستم شد!");
-                renderWorkoutHub();
-            } else { alert("فرمت فایل برنامه ورزشی معتبر نیست."); }
-        } catch(err) { alert("خطا در پردازش فایل برنامه ورزشی."); }
-    };
-    reader.readAsText(file);
 }
 
 function createStrategicGoal() {
@@ -945,7 +950,7 @@ function startCountdown() {
             saveToDatabase();
             updatePomodoroCyclesUI();
             refreshUI();
-            triggerAlertNotification("زمان تمرکز به پایان رسید", "سیکل تمرکز شما در STRAT.OS تکمیل شد! +10 امتیاز اضافه شد.");
+            triggerAlertNotification("زمان تمرکز به پایان رسید", "سیکل تمرکز شما تکمیل شد! +10 امتیاز اضافه شد.");
         }
     }, 1000);
 }
@@ -1118,7 +1123,7 @@ function updateProfileInfo() {
     if(bio) { appState.userBio = bio; document.getElementById('prof-display-bio').innerText = bio; }
     
     saveToDatabase();
-    alert("اطلاعات کارت شناسایی با موفقیت بروزرسانی شد.");
+    alert("اطلاعات با موفقیت بروزرسانی شد.");
 }
 
 function renderProfileStats() {
@@ -1151,7 +1156,7 @@ function renderProfileStats() {
         { id: 'streak_7', title: 'قهرمان هفته', desc: '۷ روز استریک متوالی', icon: 'i-crown', unlocked: (appState.streak || 0) >= 7 },
         { id: 'pomodoro_master', title: 'تمرکز عمیق', desc: 'انجام ۵ سیکل پومودورو', icon: 'i-stopwatch', unlocked: (appState.pomodoroCycles || 0) >= 5 },
         { id: 'elite_level', title: 'فرمانده الیت', desc: 'رسیدن به سطح ۵', icon: 'i-shield', unlocked: level >= 5 },
-        { id: 'task_machine', title: 'ماشین بهره‌وری', desc: 'تکمیل ۵۰ تسک استراتژیک', icon: 'i-bullseye', unlocked: histData.totalCompleted >= 50 }
+        { id: 'task_machine', title: 'ماشین بهره‌وری', desc: 'تکمیل ۵۰ تسک', icon: 'i-bullseye', unlocked: histData.totalCompleted >= 50 }
     ];
 
     const badgesContainer = document.getElementById('profile-badges-container');
@@ -1329,19 +1334,19 @@ function renderAnalytics() {
         }
     }
 
-    let aiText = "بر اساس داده‌های فعلی، در حال تثبیت عادات هستید. وظایف کلیدی را در زمان طلایی خود انجام دهید.";
+    let aiText = "بر اساس داده‌های فعلی وظایف کلیدی را در زمان طلایی خود انجام دهید.";
     let type = "نیاز به دیتای بیشتر";
     let burnout = "ایمن (Low Risk)";
     
     const statBurnout = document.getElementById("stat-burnout");
     if(histData.totalFailed > histData.totalCompleted && histData.totalFailed > 10) {
         burnout = "خطر بالا (High Risk)";
-        aiText = "هشدار سیستم: حجم تسک‌های سوخته بالاست. از تراکم برنامه کاسته و روی ریکاوری تمرکز کنید.";
+        aiText = "حجم تسک‌های سوخته بالاست. از تراکم برنامه کاسته و روی ریکاوری تمرکز کنید.";
         if(statBurnout) statBurnout.className = "badge high";
     } else {
         if(statBurnout) statBurnout.className = "badge low";
         if (habitRate > 80 && focusScore > 70) {
-            aiText = "عملکرد شما در بالاترین سطح است! ریتم فعلی را حفظ کرده و برای ارتقا آماده باشید.";
+            aiText = "عملکرد شما در بالاترین سطح است! ریتم فعلی را حفظ کنید.";
         }
     }
 
@@ -1362,7 +1367,7 @@ function renderAnalytics() {
 }
 
 function factoryResetDatabase() {
-    if(confirm("آیا از حذف کامل اطلاعات هسته، تم‌ها و تاریخچه اطمینان دارید؟")) {
+    if(confirm("آیا از حذف کامل اطلاعات، تم‌ها و تاریخچه اطمینان دارید؟")) {
         localStorage.removeItem(storageKey);
         localStorage.removeItem(historicalKey);
         location.reload();
