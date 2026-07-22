@@ -3,6 +3,8 @@ const historicalKey = "STRATOS_HISTORICAL";
 const userSessionKey = "STRATOS_USER_ID";
 const mysqlEndpoint = "api.php";
 
+
+// NEED BE UPDATED
 const IRAN_HOLIDAYS_OFFLINE = {
     "1/1": "جشن نوروز - تعطیل رسمی", "1/2": "عید نوروز - تعطیل رسمی", "1/3": "عید نوروز - تعطیل رسمی", "1/4": "عید نوروز - تعطیل رسمی",
     "1/12": "روز جمهوری اسلامی", "1/13": "روز طبیعت (سیزده بدر)",
