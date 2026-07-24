@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>STRAT.OS VIP - شبکه لایو چت و اشتراک‌گذاری پیشرفته</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --vip-gold: #fbbf24;
+            --vip-gold-glow: rgba(251, 191, 36, 0.4);
+            --vip-purple: #c084fc;
+            --vip-purple-glow: rgba(192, 132, 252, 0.35);
+            --vip-cyan: #38bdf8;
+            --vip-bg: #03050c;
+            --vip-glass: rgba(11, 15, 29, 0.85);
+            --vip-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Mikhak', sans-serif; }
+        body { background: var(--vip-bg); color: #f8fafc; height: 100vh; overflow: hidden; display: flex; }
+
+        .vip-app-layout { display: flex; width: 100vw; height: 100vh; backdrop-filter: saturate(140%) contrast(102%); position: relative; z-index: 2; }
+        
+        .vip-sidebar {
+            width: 360px;
+            background: var(--vip-glass);
+            border-left: 1px solid var(--vip-border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            gap: 20px;
+            z-index: 10;
+            box-shadow: -10px 0 35px rgba(0,0,0,0.6);
+            backdrop-filter: blur(35px);
+        }
+
+        .vip-brand {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--vip-border);
+        }
+        .vip-brand-title {
+            font-size: 18px;
+            font-weight: 950;
+            background: linear-gradient(90deg, var(--vip-gold), var(--vip-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-back-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--vip-border);
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 14px;
+            font-size: 12.5px;
+            font-weight: 850;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            width: 100%;
+        }
+        .btn-back-panel:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--vip-cyan);
+            color: var(--vip-cyan);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+        }
+
+        .admin-panel-box {
+            background: rgba(251, 191, 36, 0.05);
+            border: 1px dashed rgba(251, 191, 36, 0.3);
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .admin-panel-box label { font-size: 12px; font-weight: 850; color: var(--vip-gold); display: flex; align-items: center; gap: 8px; }
+
+        .vip-input-group { display: flex; gap: 8px; width: 100%; }
+        .vip-input-group input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--vip-border);
+            border-radius: 14px;
+            padding: 11px 16px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+            transition: 0.25s;
+            font-weight: 600;
+        }
+        .vip-input-group input:focus { border-color: var(--vip-gold); box-shadow: 0 0 15px var(--vip-gold-glow); }
+
+        .friends-wrapper { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-left: 4px; }
+        .friend-node {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--vip-border);
+            border-radius: 18px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .friend-node:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+        .friend-node.active {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(192, 132, 252, 0.15));
+            border-color: var(--vip-gold);
+            box-shadow: 0 0 20px var(--vip-gold-glow);
+        }
+        .friend-info { display: flex; align-items: center; gap: 12px; }
+        .friend-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--vip-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--vip-cyan);
+        }
+
+        .chat-main-space { flex: 1; display: flex; flex-direction: column; background: rgba(3, 5, 12, 0.85); position: relative; backdrop-filter: blur(20px); }
+        
+        .chat-top-hud {
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--vip-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(11, 15, 29, 0.6);
+        }
+        .active-user-meta { display: flex; align-items: center; gap: 14px; }
+        .active-user-title h3 { font-size: 17px; font-weight: 950; color: #fff; }
+        .active-user-title span { font-size: 12px; color: #34d399; display: flex; align-items: center; gap: 6px; font-weight: 700; }
+
+        .chat-feed { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
+
+        .chat-bubble {
+            max-width: 65%;
+            padding: 14px 20px;
+            border-radius: 22px;
+            font-size: 14px;
+            line-height: 1.7;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            font-weight: 600;
+        }
+        .chat-bubble.me {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #0284c7, #0891b2);
+            color: #fff;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-bubble.other {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--vip-border);
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble.data_share {
+            background: linear-gradient(135deg, rgba(192, 132, 252, 0.2), rgba(124, 58, 237, 0.3));
+            border: 1px solid var(--vip-purple);
+            max-width: 80%;
+            border-radius: 22px;
+        }
+
+        .media-render { max-width: 320px; border-radius: 16px; border: 1px solid var(--vip-border); margin-top: 6px; }
+
+        .chat-bottom-hud {
+            padding: 20px 30px;
+            border-top: 1px solid var(--vip-border);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: rgba(11, 15, 29, 0.6);
+        }
+        .chat-bottom-hud input[type="text"] {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--vip-border);
+            padding: 14px 20px;
+            border-radius: 16px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: 0.25s;
+            font-weight: 600;
+        }
+        .chat-bottom-hud input[type="text"]:focus { border-color: var(--vip-cyan); box-shadow: 0 0 18px rgba(56, 189, 248, 0.3); }
+
+        .btn-action-vip {
+            background: linear-gradient(135deg, var(--vip-gold), #d97706);
+            color: #000;
+            font-weight: 950;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13.5px;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+        .btn-action-vip:hover { transform: translateY(-2px); box-shadow: 0 0 22px var(--vip-gold-glow); filter: brightness(1.1); }
+        
+        .btn-icon-only {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--vip-border);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+        .btn-icon-only:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3); transform: scale(1.05); }
+
+        .data-sync-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--vip-purple);
+            border-radius: 18px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .share-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(3, 5, 12, 0.88);
+            backdrop-filter: blur(20px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .share-modal-panel {
+            background: var(--vip-glass);
+            border: 1px solid var(--vip-border);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 28px;
+            padding: 32px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .modal-title { font-size: 18px; font-weight: 950; color: #fff; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--vip-border); padding-bottom: 14px; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 12px; }
+        .checkbox-item { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 14px; border: 1px solid var(--vip-border); cursor: pointer; transition: 0.2s; font-weight: 700; font-size: 13.5px; }
+        .checkbox-item:hover { background: rgba(255,255,255,0.08); border-color: var(--vip-cyan); }
+        .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--vip-purple); cursor: pointer; }
+
+        /* --- استایل اختصاصی های‌تک برای مدال نمایش دیدنی --- */
+        .viewer-section-title {
+            font-size: 14px;
+            font-weight: 950;
+            margin: 14px 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+        
+        .viewer-task-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--vip-border);
+            padding: 12px 16px;
+            border-radius: 14px;
+            margin-bottom: 8px;
+        }
+        .viewer-task-card.completed {
+            border-color: rgba(52, 211, 153, 0.3);
+            background: rgba(52, 211, 153, 0.05);
+        }
+        .viewer-task-card.completed .viewer-task-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .viewer-goal-card {
+            background: linear-gradient(145deg, rgba(15, 22, 38, 0.6), rgba(6, 9, 18, 0.8));
+            border: 1px solid var(--vip-purple);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .viewer-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .viewer-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #c084fc, #9333ea);
+            border-radius: 4px;
+            box-shadow: 0 0 10px #c084fc;
+        }
+
+        .viewer-workout-day {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--vip-border);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+        .viewer-exc-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12.5px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .viewer-exc-item:last-child { border-bottom: none; }
+    </style>
+</head>
+<body class="theme-cyberpunk">
+
+<div class="glass-bg-container">
+    <div class="sphere sphere-one"></div>
+    <div class="sphere sphere-two"></div>
+    <div class="sphere sphere-three"></div>
+</div>
+
+<svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="ico-crown" viewBox="0 0 24 24"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm0 16h20"/></symbol>
+    <symbol id="ico-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="ico-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    <symbol id="ico-send" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></symbol>
+    <symbol id="ico-paperclip" viewBox="0 0 24 24"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></symbol>
+    <symbol id="ico-share" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></symbol>
+    <symbol id="ico-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="ico-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="ico-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+    <symbol id="ico-arrow-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+    <symbol id="ico-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="ico-xmark" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+    <symbol id="ico-bullseye" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="ico-dumbbell" viewBox="0 0 24 24"><path d="M6 4h12M6 20h12M12 4v16M3 8h6M3 16h6M15 8h6M15 16h6"/></symbol>
+    <symbol id="ico-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></symbol>
+</svg>
+
+<div class="vip-app-layout">
+    <aside class="vip-sidebar">
+        <a href="index.html" class="btn-back-panel">
+            <svg class="ico"><use href="#ico-arrow-right"/></svg>
+            <span>بازگشت به پنل اصلی</span>
+        </a>
+
+        <div class="vip-brand">
+            <div class="vip-brand-title">
+                <svg class="ico" style="width:22px; height:22px; color:var(--vip-gold);"><use href="#ico-crown"/></svg>
+                <span>STRAT.OS VIP NETWORK</span>
+            </div>
+        </div>
+
+        <div id="admin-vip-panel" class="admin-panel-box" style="display:none;">
+            <label><svg class="ico"><use href="#ico-shield"/></svg> اعطای دسترسی VIP (ادمین):</label>
+            <div class="vip-input-group">
+                <input type="number" id="grant-user-id" placeholder="ID کاربر">
+                <button class="btn-action-vip" onclick="grantVipAccess()">اعطا</button>
+            </div>
+        </div>
+
+        <div class="vip-input-group">
+            <input type="number" id="friend-id-input" placeholder="شناسه (ID) کاربر...">
+            <button class="btn-action-vip" onclick="sendFriendRequest()">
+                <svg class="ico"><use href="#ico-plus"/></svg>
+            </button>
+        </div>
+
+        <div class="friends-wrapper" id="friends-container"></div>
+    </aside>
+
+    <main class="chat-main-space">
+        <header class="chat-top-hud">
+            <div class="active-user-meta">
+                <div class="friend-avatar" style="width:46px; height:46px;">
+                    <svg class="ico" style="width:24px; height:24px;"><use href="#ico-user"/></svg>
+                </div>
+                <div class="active-user-title">
+                    <h3 id="active-chat-name">مخاطبی انتخاب نشده است</h3>
+                    <span id="active-chat-status"><svg class="ico" style="width:12px; height:12px;"><use href="#ico-clock"/></svg> در انتظار انتخاب دوست</span>
+                </div>
+            </div>
+
+            <button class="btn-action-vip" style="background: linear-gradient(135deg, #c084fc, #9333ea); color: #fff;" onclick="openShareModal()">
+                <svg class="ico"><use href="#ico-share"/></svg>
+                <span>اشتراک‌گذاری بخش‌های پنل</span>
+            </button>
+        </header>
+
+        <div class="chat-feed" id="chat-box"></div>
+
+        <footer class="chat-bottom-hud">
+            <input type="file" id="file-uploader" style="display:none;" onchange="uploadFileMessage(event)">
+            <button class="btn-icon-only" onclick="document.getElementById('file-uploader').click()">
+                <svg class="ico"><use href="#ico-paperclip"/></svg>
+            </button>
+            <input type="text" id="msg-input" placeholder="پیام خود را بنویسید..." onkeypress="if(event.key==='Enter') sendTextMessage()">
+            <button class="btn-action-vip" onclick="sendTextMessage()">
+                <svg class="ico"><use href="#ico-send"/></svg>
+                <span>ارسال</span>
+            </button>
+        </footer>
+    </main>
+</div>
+
+<div class="share-modal-overlay" id="share-modal">
+    <div class="share-modal-panel">
+        <div class="modal-title">
+            <span>انتخاب بخش‌ها جهت ارسال (فقط دیدنی)</span>
+            <svg class="ico" style="cursor:pointer;" onclick="closeShareModal()"><use href="#ico-xmark"/></svg>
+        </div>
+        <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" id="chk-tasks" checked> لیست تسک‌ها و اهداف روز</label>
+            <label class="checkbox-item"><input type="checkbox" id="chk-workout" checked> برنامه ورزشی هفته</label>
+            <label class="checkbox-item"><input type="checkbox" id="chk-goals" checked> اهداف کلان و چشم‌اندازها</label>
+            <label class="checkbox-item"><input type="checkbox" id="chk-profile" checked> اطلاعات کارت پروفایل و آمار</label>
+        </div>
+        <button class="btn-action-vip" style="justify-content:center;" onclick="executeSelectedShare()">
+            <svg class="ico"><use href="#ico-share"/></svg>
+            <span>ارسال بخش‌های انتخابی</span>
+        </button>
+    </div>
+</div>
+
+<div class="share-modal-overlay" id="view-modal">
+    <div class="share-modal-panel" style="max-width: 650px; max-height: 85vh; overflow-y: auto;">
+        <div class="modal-title">
+            <span style="display:flex; align-items:center; gap:8px;">
+                <svg class="ico" style="color:var(--vip-cyan);"><use href="#ico-eye"/></svg>
+                نمایش زنده اطلاعات اشتراک‌گذاری‌شده
+            </span>
+            <svg class="ico" style="cursor:pointer;" onclick="closeViewModal()"><use href="#ico-xmark"/></svg>
+        </div>
+        
+        <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid var(--vip-cyan); padding: 8px 14px; border-radius: 12px; font-size: 11.5px; color: var(--vip-cyan); font-weight: 800; display: flex; align-items: center; gap: 8px;">
+            <svg class="ico" style="width:14px; height:14px;"><use href="#ico-shield"/></svg>
+            <span>حالت فقط خواندنی (READ-ONLY) - غیرقابل تغییر و جایگزینی</span>
+        </div>
+
+        <div id="viewer-content-container" style="display:flex; flex-direction:column; gap:12px;"></div>
+    </div>
+</div>
+
+<script>
+const currentUserId = localStorage.getItem("STRATOS_USER_ID") || 1;
+let activeFriendId = null;
+let lastMsgId = 0;
+let sharedDataStore = {};
+
+if (parseInt(currentUserId) === 1) {
+    document.getElementById('admin-vip-panel').style.display = 'flex';
+}
+
+async function fetchFriends() {
+    try {
+        const res = await fetch(`vip-api.php?action=get_friends&user_id=${currentUserId}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+            const container = document.getElementById('friends-container');
+            container.innerHTML = '';
+            data.data.forEach(f => {
+                container.innerHTML += `
+                    <div class="friend-node ${activeFriendId === f.user_id ? 'active' : ''}" onclick="selectFriend(${f.user_id}, '${f.username}')">
+                        <div class="friend-info">
+                            <div class="friend-avatar"><svg class="ico"><use href="#ico-user"/></svg></div>
+                            <div>
+                                <div style="font-size:13.5px; font-weight:850; color:#fff;">${f.username}</div>
+                                <div style="font-size:11px; color:rgba(255,255,255,0.4);">ID: ${f.user_id}</div>
+                            </div>
+                        </div>
+                        <div style="color: ${f.status === 'accepted' ? '#34d399' : '#fbbf24'};">
+                            <svg class="ico"><use href="#${f.status === 'accepted' ? 'ico-check' : 'ico-clock'}"/></svg>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    } catch(e) {}
+}
+
+function selectFriend(id, name) {
+    activeFriendId = id;
+    lastMsgId = 0;
+    document.getElementById('active-chat-name').innerText = name;
+    document.getElementById('active-chat-status').innerHTML = `<svg class="ico" style="width:12px; height:12px;"><use href="#ico-check"/></svg> متصل به کانال آنلاین`;
+    document.getElementById('chat-box').innerHTML = '';
+    fetchMessages();
+}
+
+async function fetchMessages() {
+    if (!activeFriendId) return;
+    try {
+        const res = await fetch(`vip-api.php?action=get_messages&user_id=${currentUserId}&friend_id=${activeFriendId}&last_id=${lastMsgId}`);
+        const data = await res.json();
+        if (data.status === 'success' && data.messages.length > 0) {
+            const chatBox = document.getElementById('chat-box');
+            data.messages.forEach(m => {
+                lastMsgId = m.id;
+                const isMe = parseInt(m.sender_id) === parseInt(currentUserId);
+                let contentHtml = m.content;
+
+                if (m.message_type === 'image') {
+                    contentHtml = `<img src="${m.file_path}" class="media-render">`;
+                } else if (m.message_type === 'video') {
+                    contentHtml = `<video src="${m.file_path}" controls class="media-render"></video>`;
+                } else if (m.message_type === 'data_share') {
+                    let msgKey = "data_" + m.id;
+                    sharedDataStore[msgKey] = JSON.parse(m.content);
+                    contentHtml = `
+                        <div class="data-sync-box">
+                            <div style="font-weight:900; font-size:13.5px; color:#fff; display:flex; align-items:center; gap:8px;">
+                                <svg class="ico" style="color:var(--vip-purple);"><use href="#ico-share"/></svg>
+                                <span>اطلاعات اشتراک‌گذاری‌شده پنل کاربر</span>
+                            </div>
+                            <button onclick="openDataViewer('${msgKey}')" class="btn-action-vip" style="background:linear-gradient(135deg, #c084fc, #9333ea); color:#fff; justify-content:center;">
+                                <svg class="ico"><use href="#ico-eye"/></svg>
+                                <span>مشاهده اطلاعات (فقط خواندنی)</span>
+                            </button>
+                        </div>
+                    `;
+                }
+
+                chatBox.innerHTML += `<div class="chat-bubble ${isMe ? 'me' : 'other'} ${m.message_type}">${contentHtml}</div>`;
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    } catch(e) {}
+}
+
+async function sendTextMessage() {
+    const input = document.getElementById('msg-input');
+    const txt = input.value.trim();
+    if (!txt || !activeFriendId) return;
+
+    await fetch('vip-api.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ action: 'send_message', user_id: currentUserId, receiver_id: activeFriendId, msg_type: 'text', content: txt })
+    });
+
+    input.value = '';
+    fetchMessages();
+}
+
+function openShareModal() {
+    if (!activeFriendId) return alert('ابتدا یک کاربر را انتخاب کنید.');
+    document.getElementById('share-modal').style.display = 'flex';
+}
+function closeShareModal() { document.getElementById('share-modal').style.display = 'none'; }
+
+async function executeSelectedShare() {
+    const fullData = JSON.parse(localStorage.getItem("STRATOS_DATA")) || {};
+    let filteredPayload = {};
+
+    if (document.getElementById('chk-tasks').checked) filteredPayload.tasks = fullData.tasks || [];
+    if (document.getElementById('chk-workout').checked) filteredPayload.workoutProgram = fullData.workoutProgram || {};
+    if (document.getElementById('chk-goals').checked) filteredPayload.goals = fullData.goals || [];
+    if (document.getElementById('chk-profile').checked) {
+        filteredPayload.profile = { name: fullData.userName, role: fullData.userRole, bio: fullData.userBio, streak: fullData.streak, points: fullData.points };
+    }
+
+    await fetch('vip-api.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ action: 'send_message', user_id: currentUserId, receiver_id: activeFriendId, msg_type: 'data_share', content: JSON.stringify(filteredPayload) })
+    });
+
+    closeShareModal();
+    fetchMessages();
+}
+
+function openDataViewer(dataKey) {
+    const data = sharedDataStore[dataKey];
+    if (!data) return;
+
+    const container = document.getElementById('viewer-content-container');
+    container.innerHTML = '';
+
+    if (data.profile) {
+        container.innerHTML += `
+            <div style="background:linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(217, 119, 6, 0.05)); border:1px solid var(--vip-gold); border-radius:20px; padding:20px; display:flex; flex-direction:column; gap:8px;">
+                <div style="font-size:16px; font-weight:950; color:#fff;">${data.profile.name || 'کاربر بدون نام'}</div>
+                <div style="font-size:12px; color:var(--vip-gold); font-weight:800;">${data.profile.role || 'کاربر VIP سیستم'}</div>
+                <div style="font-size:12.5px; color:#cbd5e1; font-style:italic;">${data.profile.bio || ''}</div>
+                <div style="display:flex; gap:15px; margin-top:8px; font-size:12px; font-weight:800;">
+                    <span style="color:#fbbf24;">استریک: ${data.profile.streak || 0} روز</span>
+                    <span style="color:#818cf8;">امتیاز: ${data.profile.points || 0}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    if (data.tasks && data.tasks.length > 0) {
+        let taskHtml = `
+            <div class="viewer-section-title" style="color:var(--vip-cyan);">
+                <svg class="ico"><use href="#ico-bullseye"/></svg>
+                <span>ماموریت‌ها و تسک‌های روز (${data.tasks.length})</span>
+            </div>
+        `;
+        data.tasks.forEach(t => {
+            let priorityBadge = t.priority === 'high' ? 'High' : (t.priority === 'medium' ? 'Med' : 'Low');
+            let pColor = t.priority === 'high' ? '#fb7185' : (t.priority === 'medium' ? '#fbbf24' : '#34d399');
+            taskHtml += `
+                <div class="viewer-task-card ${t.done ? 'completed' : ''}">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <svg class="ico" style="color:${t.done ? '#34d399' : 'var(--text-muted)'};"><use href="#ico-${t.done ? 'check' : 'clock'}"/></svg>
+                        <span class="viewer-task-text" style="font-size:13.5px; font-weight:700;">${t.text}</span>
+                    </div>
+                    <span class="badge" style="background:rgba(255,255,255,0.05); color:${pColor}; border:1px solid ${pColor};">${priorityBadge}</span>
+                </div>
+            `;
+        });
+        container.innerHTML += `<div>${taskHtml}</div>`;
+    }
+
+    if (data.goals && data.goals.length > 0) {
+        let goalHtml = `
+            <div class="viewer-section-title" style="color:var(--vip-purple);">
+                <svg class="ico"><use href="#ico-flag"/></svg>
+                <span>اهداف و چشم‌اندازها (${data.goals.length})</span>
+            </div>
+        `;
+        data.goals.forEach(g => {
+            goalHtml += `
+                <div class="viewer-goal-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:14px; font-weight:900; color:#fff;">${g.title}</span>
+                        <span style="font-size:13px; font-weight:900; color:var(--vip-purple);">${g.progress || 0}%</span>
+                    </div>
+                    <div class="viewer-progress-bar">
+                        <div class="viewer-progress-fill" style="width:${g.progress || 0}%;"></div>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML += `<div>${goalHtml}</div>`;
+    }
+
+    if (data.workoutProgram) {
+        let fitHtml = `
+            <div class="viewer-section-title" style="color:#34d399;">
+                <svg class="ico"><use href="#ico-dumbbell"/></svg>
+                <span>برنامه ورزشی</span>
+            </div>
+        `;
+        let hasExc = false;
+        for (let day in data.workoutProgram) {
+            let excs = data.workoutProgram[day];
+            if (excs && excs.length > 0) {
+                hasExc = true;
+                fitHtml += `
+                    <div class="viewer-workout-day">
+                        <div style="font-size:13.5px; font-weight:900; color:#34d399; margin-bottom:8px;">روز ${day}</div>
+                `;
+                excs.forEach(e => {
+                    fitHtml += `
+                        <div class="viewer-exc-item">
+                            <span style="font-weight:700; color:#fff;">${e.name} (${e.category})</span>
+                            <span style="color:var(--text-muted); font-weight:800;">${e.sets} ست × ${e.reps} تکرار - ${e.weight}</span>
+                        </div>
+                    `;
+                });
+                fitHtml += `</div>`;
+            }
+        }
+        if (hasExc) container.innerHTML += `<div>${fitHtml}</div>`;
+    }
+
+    document.getElementById('view-modal').style.display = 'flex';
+}
+function closeViewModal() { document.getElementById('view-modal').style.display = 'none'; }
+
+async function uploadFileMessage(e) {
+    const file = e.target.files[0];
+    if (!file || !activeFriendId) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('user_id', currentUserId);
+    formData.append('receiver_id', activeFriendId);
+
+    let type = 'file';
+    if (file.type.startsWith('image/')) type = 'image';
+    if (file.type.startsWith('video/')) type = 'video';
+    formData.append('msg_type', type);
+
+    await fetch('vip-api.php?action=upload_file', { method: 'POST', body: formData });
+    fetchMessages();
+}
+
+async function sendFriendRequest() {
+    const id = document.getElementById('friend-id-input').value;
+    if (!id) return;
+    await fetch('vip-api.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ action: 'send_friend_request', user_id: currentUserId, friend_id: id })
+    });
+    document.getElementById('friend-id-input').value = '';
+    fetchFriends();
+}
+
+async function grantVipAccess() {
+    const id = document.getElementById('grant-user-id').value;
+    if (!id) return;
+    const res = await fetch('vip-api.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ action: 'grant_vip', user_id: currentUserId, target_id: id })
+    });
+    const data = await res.json();
+    alert(data.message);
+}
+
+setInterval(() => {
+    fetchFriends();
+    fetchMessages();
+}, 1200);
+
+fetchFriends();
+</script>
+</body>
+</html>
