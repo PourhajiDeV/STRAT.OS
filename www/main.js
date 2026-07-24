@@ -3,14 +3,22 @@ const historicalKey = "STRATOS_HISTORICAL";
 const userSessionKey = "STRATOS_USER_ID";
 const mysqlEndpoint = "api.php";
 
-
-// NEED BE UPDATED
-const IRAN_HOLIDAYS_OFFLINE = {
-    "1/1": "جشن نوروز - تعطیل رسمی", "1/2": "عید نوروز - تعطیل رسمی", "1/3": "عید نوروز - تعطیل رسمی", "1/4": "عید نوروز - تعطیل رسمی",
+let IRAN_HOLIDAYS_OFFLINE = {
+    "1/1": "جشن نوروز - تعطیل رسمی", "1/2": "عید نوروز", "1/3": "عید نوروز", "1/4": "عید نوروز",
     "1/12": "روز جمهوری اسلامی", "1/13": "روز طبیعت (سیزده بدر)",
-    "3/14": "رحلت امام خمینی", "3/15": "قیام ۱۵ خرداد",
-    "11/22": "پیروزی انقلاب اسلامی", "12/29": "ملی شدن صنعت نفت"
+    "3/14": "رحلت امام خمینی (ره)", "3/15": "قیام ۱۵ خرداد",
+    "11/22": "پیروزی انقلاب اسلامی", "12/29": "روز ملی شدن صنعت نفت"
 };
+
+async function fetchServerHolidays() {
+    try {
+        const res = await fetch(`${mysqlEndpoint}?action=get_holidays&year=1403`);
+        const data = await res.json();
+        if (data.status === "success" && data.holidays) {
+            IRAN_HOLIDAYS_OFFLINE = { ...IRAN_HOLIDAYS_OFFLINE, ...data.holidays };
+        }
+    } catch (e) {}
+}
 
 function getIranianHoliday(dateObj) {
     if (dateObj.getDay() === 5) return "جمعه (تعطیل پایان هفته)";
@@ -31,10 +39,12 @@ let appState = JSON.parse(localStorage.getItem(storageKey)) || {
     uiMode: "full",
     userName: "کاربر سیستم", userRole: "STRAT.OS ELITE OPERATOR",
     userBio: "«تمرکز روی اهداف، کلید فتح آینده است...»", userAvatar: "shield",
-    dailyLogs: {}, dbEngine: "mysql", mysqlEndpoint: "api.php",
+    dailyLogs: {}, events: {}, dbEngine: "mysql", mysqlEndpoint: "api.php",
     streak: 0, lastStreakDate: "", points: 0, dailyPointsToday: 0, lastPointsDate: "", weeklyBonusDate: "",
     pomodoroCycles: 0, lastPomodoroDate: new Date().toDateString()
 };
+
+if (!appState.events) appState.events = {};
 
 if(!appState.workoutProgram || !appState.workoutProgram["شنبه"]) {
     appState.workoutProgram = { "شنبه": [], "یکشنبه": [], "دوشنبه": [], "سه_شنبه": [], "چهارشنبه": [], "پنجشنبه": [], "جمعه": [] };
@@ -122,6 +132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!currentUserId) return;
 
     await loadFromMysqlServer();
+    await fetchServerHolidays();
 
     document.body.className = `${appState.theme || 'theme-cyberpunk'} mode-${appState.uiMode || 'full'}`;
     const cardEl = document.getElementById('export-card-dom');
@@ -270,10 +281,46 @@ function updateThemeCardsUI() {
     });
 }
 
+function calculateAndLockEndOfDay() {
+    let todayTasks = appState.tasks || [];
+    let ptsEarned = 0;
+
+    todayTasks.forEach(t => {
+        if (t.done) {
+            let pts = t.priority === 'high' ? 5 : (t.priority === 'medium' ? 3 : 2);
+            ptsEarned += pts;
+        }
+    });
+
+    let finalDailyAdd = Math.min(15, ptsEarned);
+    appState.dailyPointsToday = finalDailyAdd;
+    appState.points = (appState.points || 0) + finalDailyAdd;
+
+    let todayStr = new Date().toDateString();
+    if (appState.lastStreakDate !== todayStr && finalDailyAdd > 0) {
+        let yest = new Date(); yest.setDate(yest.getDate() - 1);
+        if (appState.lastStreakDate === yest.toDateString()) {
+            appState.streak = (appState.streak || 0) + 1;
+        } else {
+            appState.streak = 1;
+        }
+        appState.lastStreakDate = todayStr;
+    }
+
+    if(new Date().getDay() === 5 && (appState.streak || 0) >= 7 && appState.weeklyBonusDate !== todayStr) {
+        appState.points += 50;
+        appState.weeklyBonusDate = todayStr;
+        triggerAlertNotification("🎉 پاداش استریک هفتگی!", "شما ۷ روز استریک متوالی داشتید! ۵۰ امتیاز هدیه به شما تعلق گرفت.");
+    }
+
+    logCurrentDayStats(appState.lastDateStr);
+}
+
 function checkNewDay() {
     let todayStr = new Date().toDateString();
     if (appState.lastDateStr !== todayStr) {
-        logCurrentDayStats(appState.lastDateStr);
+        calculateAndLockEndOfDay();
+
         appState.lastDateStr = todayStr;
         appState.isDayEnded = false;
         appState.tasks = [];
@@ -343,7 +390,9 @@ function switchAppView(viewId, element) {
 
 function toggleEndDay() {
     appState.isDayEnded = !appState.isDayEnded;
-    if(appState.isDayEnded) logCurrentDayStats(new Date().toDateString());
+    if(appState.isDayEnded) {
+        calculateAndLockEndOfDay();
+    }
     refreshUI();
 }
 
@@ -444,44 +493,15 @@ function toggleTask(id) {
     const t = appState.tasks.find(x => x.id === id);
     if(t && !t.failed) {
         t.done = !t.done;
-        let todayStr = new Date().toDateString();
-        if(appState.lastPointsDate !== todayStr) { appState.dailyPointsToday = 0; appState.lastPointsDate = todayStr; }
-
         if(!histData.priorityStats) histData.priorityStats = { highDone: 0, highTotal: 0, medDone: 0, medTotal: 0, lowDone: 0, lowTotal: 0 };
-        
-        let pts = t.priority === 'high' ? 5 : (t.priority === 'medium' ? 3 : 2);
         
         if(t.done) {
             histData.totalCompleted++;
             histData.completionHours.push(new Date().getHours());
             histData.priorityStats[t.priority + 'Done']++;
-
-            let available = 15 - (appState.dailyPointsToday || 0);
-            let toAdd = Math.min(pts, Math.max(0, available));
-            appState.dailyPointsToday = (appState.dailyPointsToday || 0) + toAdd;
-            appState.points = (appState.points || 0) + toAdd;
-
-            if(appState.lastStreakDate !== todayStr) {
-                let yest = new Date(); yest.setDate(yest.getDate() - 1);
-                if(appState.lastStreakDate === yest.toDateString()) {
-                    appState.streak = (appState.streak || 0) + 1;
-                } else {
-                    appState.streak = 1;
-                }
-                appState.lastStreakDate = todayStr;
-            }
-
-            if(new Date().getDay() === 5 && (appState.streak || 0) >= 7 && appState.weeklyBonusDate !== todayStr) {
-                appState.points += 50;
-                appState.weeklyBonusDate = todayStr;
-                triggerAlertNotification("🎉 پاداش استریک هفتگی!", "شما ۷ روز استریک متوالی داشتید! ۵۰ امتیاز هدیه به شما تعلق گرفت.");
-            }
         } else {
             histData.totalCompleted = Math.max(0, histData.totalCompleted - 1);
             histData.priorityStats[t.priority + 'Done'] = Math.max(0, histData.priorityStats[t.priority + 'Done'] - 1);
-
-            appState.dailyPointsToday = Math.max(0, (appState.dailyPointsToday || 0) - pts);
-            appState.points = Math.max(0, (appState.points || 0) - pts);
         }
         refreshUI();
     }
@@ -500,9 +520,6 @@ function deleteTask(id) {
         histData.priorityStats[t.priority + 'Total'] = Math.max(0, histData.priorityStats[t.priority + 'Total'] - 1);
         if(t.done) {
             histData.priorityStats[t.priority + 'Done'] = Math.max(0, histData.priorityStats[t.priority + 'Done'] - 1);
-            let pts = t.priority === 'high' ? 5 : (t.priority === 'medium' ? 3 : 2);
-            appState.dailyPointsToday = Math.max(0, (appState.dailyPointsToday || 0) - pts);
-            appState.points = Math.max(0, (appState.points || 0) - pts);
         }
     }
     appState.tasks = appState.tasks.filter(t => t.id !== id);
@@ -1041,6 +1058,7 @@ function generateCalendarGrid() {
         let log = appState.dailyLogs && appState.dailyLogs[dateStr];
         
         let holidayName = getIranianHoliday(dateObj);
+        let hasEvents = appState.events[dateStr] && appState.events[dateStr].length > 0;
         
         let rateClass = "";
         if(log && log.totalTasks > 0) {
@@ -1052,11 +1070,15 @@ function generateCalendarGrid() {
 
         let dayEl = document.createElement('div');
         dayEl.className = `cal-day ${isToday ? 'active-day' : ''} ${rateClass} ${holidayName ? 'holiday-day' : ''}`;
-        dayEl.innerHTML = `<span>${d}</span><div class="cal-day-indicator"></div>`;
+        dayEl.innerHTML = `
+            <span>${d}</span>
+            ${hasEvents ? '<div class="event-dot"></div>' : ''}
+            <div class="cal-day-indicator"></div>
+        `;
         dayEl.onclick = () => selectCalendarDay(dateStr, d, dayEl, holidayName);
         container.appendChild(dayEl);
     }
-    selectCalendarDay(new Date().toDateString(), now.getDate(), null, getIranianHoliday(now));
+    selectCalendarDay(selectedCalDateStr || new Date().toDateString(), now.getDate(), null, getIranianHoliday(now));
 }
 
 function selectCalendarDay(dateStr, dayNum, el, holidayName) {
@@ -1092,8 +1114,60 @@ function selectCalendarDay(dateStr, dayNum, el, holidayName) {
     document.getElementById('rep-success-rate').innerText = `${ratioPct}%`;
     document.getElementById('rep-bar-rate').style.width = `${ratioPct}%`;
 
-    document.getElementById('rep-peak-hour').innerText = log.peakHour || "ثبت نشده";
+    renderCalendarEventsList(dateStr);
     document.getElementById('cal-day-note').value = log.note || "";
+}
+
+function addCalendarEvent() {
+    const title = document.getElementById('event-title-input').value.trim();
+    const time = document.getElementById('event-time-input').value;
+    if (!title) return;
+
+    if (!appState.events[selectedCalDateStr]) {
+        appState.events[selectedCalDateStr] = [];
+    }
+
+    appState.events[selectedCalDateStr].push({
+        id: Date.now(),
+        title: title,
+        time: time || "سراسر روز"
+    });
+
+    document.getElementById('event-title-input').value = "";
+    document.getElementById('event-time-input').value = "";
+    saveToDatabase();
+    generateCalendarGrid();
+    renderCalendarEventsList(selectedCalDateStr);
+}
+
+function deleteCalendarEvent(eventId) {
+    if (appState.events[selectedCalDateStr]) {
+        appState.events[selectedCalDateStr] = appState.events[selectedCalDateStr].filter(e => e.id !== eventId);
+        saveToDatabase();
+        generateCalendarGrid();
+        renderCalendarEventsList(selectedCalDateStr);
+    }
+}
+
+function renderCalendarEventsList(dateStr) {
+    const listContainer = document.getElementById('cal-events-list');
+    if (!listContainer) return;
+    listContainer.innerHTML = "";
+
+    const events = appState.events[dateStr] || [];
+    if (events.length === 0) {
+        listContainer.innerHTML = `<span style="font-size:12px; color:var(--text-muted);">هیچ رویدادی برای این تاریخ ثبت نشده است.</span>`;
+        return;
+    }
+
+    events.forEach(ev => {
+        listContainer.innerHTML += `
+            <div class="event-item">
+                <span style="font-size:13px; font-weight:700;">📌 ${ev.title} <small style="color:#38bdf8; margin-right:6px;">(${ev.time})</small></span>
+                <button class="action-btn del" onclick="deleteCalendarEvent(${ev.id})"><svg class="ico"><use href="#i-trash"/></svg></button>
+            </div>
+        `;
+    });
 }
 
 function saveSelectedDayNote() {

@@ -666,6 +666,26 @@ button.btn-danger:hover { transform: translateY(-2px); box-shadow: 0 12px 30px r
     text-shadow: 0 0 8px #38bdf8;
 }
 
+.event-dot {
+    width: 5px;
+    height: 5px;
+    background-color: #38bdf8;
+    border-radius: 50%;
+    position: absolute;
+    top: 6px;
+    box-shadow: 0 0 6px #38bdf8;
+}
+
+.event-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    padding: 8px 12px;
+    border-radius: 12px;
+}
+
 @media (max-width: 400px) {
     .kpi-grid { grid-template-columns: 1fr; }
     .header-actions { flex-direction: column; align-items: stretch; }
