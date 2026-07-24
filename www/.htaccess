@@ -1,0 +1,22 @@
+Options -Indexes
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+<FilesMatch "(\.(bak|config|sql|json|ini|log|sh|md)|~)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>

@@ -1,7 +1,9 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: https://pourhajidev.ir");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json; charset=UTF-8");
+header("X-Content-Type-Options: nosniff");
+header("X-Frame-Options: DENY");
 
 $db_host = "localhost";
 $db_user = "root";
@@ -10,7 +12,8 @@ $db_name = "stratos_db";
 
 $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
 if ($conn->connect_error) {
-    echo json_encode(["status" => "error", "message" => "Connection failed"]);
+    http_response_code(500);
+    echo json_encode(["status" => "error", "message" => "Database connection error"]);
     exit();
 }
 $conn->set_charset("utf8mb4");
@@ -27,7 +30,6 @@ function julianToJalali($jdn) {
     $jy = $y33 + $cycle * 2820 + 474;
     if ($jy <= 0) $jy--;
     
-    $jdnStart = hijriToJulian(1, 1, 1); 
     $sal_a = [0, 31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29];
     $d2 = $rem % 365;
     $jm = 1;
@@ -90,11 +92,18 @@ if ($method === 'POST' && isset($input['action'])) {
     $action = $input['action'];
 
     if ($action === 'register') {
-        $user = trim($input['username']);
-        $pass = password_hash($input['password'], PASSWORD_BCRYPT);
+        $user = trim($input['username'] ?? '');
+        $pass = $input['password'] ?? '';
+        
+        if (empty($user) || empty($pass) || strlen($user) < 3) {
+            echo json_encode(["status" => "error", "message" => "ورودی‌ها معتبر نیستند"]);
+            exit();
+        }
+
+        $hashed_pass = password_hash($pass, PASSWORD_BCRYPT);
         
         $stmt = $conn->prepare("INSERT INTO stratos_users (username, password) VALUES (?, ?)");
-        $stmt->bind_param("ss", $user, $pass);
+        $stmt->bind_param("ss", $user, $hashed_pass);
         if ($stmt->execute()) {
             echo json_encode(["status" => "success", "user_id" => $stmt->insert_id]);
         } else {
@@ -104,8 +113,8 @@ if ($method === 'POST' && isset($input['action'])) {
     }
     
     elseif ($action === 'login') {
-        $user = trim($input['username']);
-        $pass = $input['password'];
+        $user = trim($input['username'] ?? '');
+        $pass = $input['password'] ?? '';
         
         $stmt = $conn->prepare("SELECT id, password FROM stratos_users WHERE username = ?");
         $stmt->bind_param("s", $user);
@@ -126,11 +135,16 @@ if ($method === 'POST' && isset($input['action'])) {
     }
     
     elseif ($action === 'sync_db') {
-        $user_id = intval($input['user_id']);
-        $payload = json_encode($input['payload'], JSON_UNESCAPED_UNICODE);
+        $user_id = intval($input['user_id'] ?? 0);
+        $payload = json_encode($input['payload'] ?? [], JSON_UNESCAPED_UNICODE);
         
-        $stmt = $conn->prepare("INSERT INTO stratos_state (user_id, data_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE data_value = ?");
-        $stmt->bind_param("iss", $user_id, $payload, $payload);
+        if ($user_id <= 0) {
+            echo json_encode(["status" => "error", "message" => "شناسه کاربر نامعتبر است"]);
+            exit();
+        }
+
+        $stmt = $conn->prepare("INSERT INTO stratos_state (user_id, data_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE data_value = VALUES(data_value)");
+        $stmt->bind_param("is", $user_id, $payload);
         if ($stmt->execute()) {
             echo json_encode(["status" => "success"]);
         } else {
@@ -141,7 +155,12 @@ if ($method === 'POST' && isset($input['action'])) {
 } 
 
 elseif ($method === 'GET' && isset($_GET['action']) && $_GET['action'] === 'load_db') {
-    $user_id = intval($_GET['user_id']);
+    $user_id = intval($_GET['user_id'] ?? 0);
+    if ($user_id <= 0) {
+        echo json_encode(["status" => "empty"]);
+        exit();
+    }
+
     $stmt = $conn->prepare("SELECT data_value FROM stratos_state WHERE user_id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
